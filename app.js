@@ -25,4 +25,5 @@ app.get("/ping", (req, res) => {
 app.use('/user', require('./routes/users'));
 app.listen(PORT, () => {
   console.log("Server started listening on PORT : " + PORT);
+  
 });
