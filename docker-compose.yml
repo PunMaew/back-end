@@ -8,7 +8,9 @@ services :
     image: backend:latest
     ports:
       - "3000:3000"
-
+      
 networks:
-  punmaew:
-    external: true
+  default:
+    external:
+      name: punmaew
+
