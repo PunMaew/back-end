@@ -1,0 +1,14 @@
+version : '3'
+services :
+  server :
+    env_file:
+      - .env
+    build: 
+      context: .
+      images: backend:latest
+    ports:
+      - "3000:3000"
+
+networks:
+  punmaew:
+    external: true
