@@ -5,7 +5,7 @@ services :
       - .env
     build: 
       context: .
-      images: backend:latest
+      image: backend:latest
     ports:
       - "3000:3000"
 
