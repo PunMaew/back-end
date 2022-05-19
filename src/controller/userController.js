@@ -6,10 +6,20 @@ const { sendEmail } = require("../helpers/mailer");
 const User = require("../model/userModel");
 //Validate user schema
 const userSchema = Joi.object().keys({
+  firstName: Joi.string().required(),
+  lastName: Joi.string().required(),
   email: Joi.string().email({ minDomainSegments: 2 }),
   password: Joi.string().required().min(4),
   confirmPassword: Joi.string().valid(Joi.ref("password")).required(),
+  location: {
+    province: Joi.string().required(),
+    district: Joi.string().required(),
+    zipCode: Joi.string().required()
+    },
+
+  //role: Joi.string().valid(Role.Admin, Role.User).required();
 });
+
 exports.Signup = async (req, res) => {
   try {
     const result = userSchema.validate(req.body);
@@ -197,9 +207,9 @@ exports.ForgotPassword = async (req, res) => {
       message: error.message,
     });
   }
- };
+};
 
- exports.ResetPassword = async (req, res) => {
+exports.ResetPassword = async (req, res) => {
   try {
     const { token, newPassword, confirmPassword } = req.body;
     if (!token || !newPassword || !confirmPassword) {
