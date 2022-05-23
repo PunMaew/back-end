@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const cleanBody = require("../middlewares/cleanbody");
-const AuthController = require("../src/controller/roleController");
+const RoleController = require("../src/controller/roleController");
 
-router.post("/addRole", cleanBody, AuthController.AddRole);
+router.post("/addRole", cleanBody, RoleController.AddRole);
 
 module.exports = router;
