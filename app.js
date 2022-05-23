@@ -4,9 +4,9 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 const PORT = 3000;
 mongoose.connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => {
     console.log("Database connection Success.");
   })
@@ -23,7 +23,18 @@ app.get("/ping", (req, res) => {
   });
 });
 app.use('/user', require('./routes/users'));
+app.use('/role', require('./routes/roles'));
+app.use('/loca', require('./routes/locs'));
+app.use('/area', require('./routes/areas'));
+app.use('/prov', require('./routes/Provinces'));
+app.use('/dist', require('./routes/districts'));
+app.use('/breeds', require('./routes/breeds'));
+app.use('/contact', require('./routes/contacts'));
+app.use('/article', require('./routes/articles'));
+app.use('/findHome', require('./routes/finderHome'));
+
+
 app.listen(PORT, () => {
   console.log("Server started listening on PORT : " + PORT);
-  
+
 });
