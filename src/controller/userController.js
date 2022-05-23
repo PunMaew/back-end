@@ -15,7 +15,7 @@ const userSchema = Joi.object().keys({
     province: Joi.string().required(),
     district: Joi.string().required(),
     zipCode: Joi.string().required()
-    },
+  },
 
   //role: Joi.string().valid(Role.Admin, Role.User).required();
 });
@@ -208,6 +208,44 @@ exports.ForgotPassword = async (req, res) => {
     });
   }
 };
+
+
+exports.ResetOtp = async (req, res) => {
+  try {
+
+    const { token } = req.body;
+    if (!token) {
+      return res.status(403).json({
+        error: true,
+        message:
+          "Couldn't process request. Please provide all mandatory fields",
+      });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: req.body.token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    if (!user) {
+      return res.send({
+        error: true,
+        message: "Password reset token is invalid or has expired.",
+      });
+    }
+
+    await user.save();
+    return res.send({
+      success: true,
+      message: "otp passed",
+    });
+  } catch (error) {
+    console.error("not pass otp", error);
+    return res.status(500).json({
+      error: true,
+      message: error.message,
+    });
+  }
+}
 
 exports.ResetPassword = async (req, res) => {
   try {
