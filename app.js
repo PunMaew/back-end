@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-
+ 
 require("dotenv").config();
 const PORT = 3000;
 mongoose.connect(process.env.MONGO_URI, {
@@ -30,7 +30,7 @@ app.use('/breeds', require('./routes/breeds'));
 app.use('/contact', require('./routes/contacts'));
 app.use('/article', require('./routes/articles'));
 app.use('/findHome', require('./routes/finderHome'));
-
+ 
 app.listen(PORT, () => {
   console.log("Server started listening on PORT : " + PORT);
 

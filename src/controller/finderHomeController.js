@@ -1,5 +1,8 @@
 const Joi = require("joi");
-const FindHome = require("../model/findHomeModel")
+const FindHome = require("../model/findHomeModel");
+const User = require("../model/userModel");
+
+
 const findHomeSchema = Joi.object().keys(
     {
         generalInfo: {
