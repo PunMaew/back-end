@@ -11,6 +11,10 @@ router.patch("/activate", cleanBody, AuthController.Activate);
 
 router.patch("/forgot",cleanBody, AuthController.ForgotPassword);
 
-router.patch("/reset",cleanBody,AuthController.ResetPassword);
+//router.patch("/reset",cleanBody,AuthController.ResetPassword);
+
+router.patch("/resetotp",cleanBody,AuthController.ResetOtp);
+
+router.patch("/newpassword",cleanBody,AuthController.ResetPassword);
 
 module.exports = router;
