@@ -17,10 +17,10 @@ mongoose.connect(process.env.MONGO_URI, {
     console.error("Mongo Connection Error", err);
   });
 const app = express();
-const corsOptions = {
-  origin: 'http://punmaew.sit.kmutt.ac.th:8080',
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: 'http://punmaew.sit.kmutt.ac.th:8080',
+//   credentials: true,
+// };
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); //optional
 app.get("/ping", (req, res) => {
@@ -29,7 +29,8 @@ app.get("/ping", (req, res) => {
     message: "Server is healthy",
   });
 });
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
 app.use('/user', require('./routes/users'));
 app.use('/role', require('./routes/roles'));
 app.use('/breeds', require('./routes/breeds'));
