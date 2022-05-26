@@ -10,11 +10,11 @@ const userSchema = Joi.object().keys({
   lastName: Joi.string().required(),
   email: Joi.string().email({ minDomainSegments: 2 }),
   password: Joi.string().required().min(4),
-  confirmPassword: Joi.string().valid(Joi.ref("password")).required(),
+  confirmPassword: Joi.string().valid(Joi.ref("password")),
   location: {
     province: Joi.string().required(),
-    district: Joi.string().required(),
-    zipCode: Joi.string().required()
+    // district: Joi.string().required(),
+    zipCode: Joi.string().required(),
   },
 
   //role: Joi.string().valid(Role.Admin, Role.User).required();
@@ -47,8 +47,8 @@ exports.Signup = async (req, res) => {
     //    remove the confirmPassword field from the result as we dont need to save this in the db.
     delete result.value.confirmPassword;
     result.value.password = hash;
-    let code = Math.floor(100000 + Math.random() * 900000);  //Generate random 6 digit code.                             
-    let expiry = Date.now() + 60 * 1000 * 15;  //Set expiry 15 mins ahead from now
+    let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
+    let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
     const sendCode = await sendEmail(result.value.email, code);
     if (sendCode.error) {
       return res.status(500).json({
@@ -100,7 +100,7 @@ exports.Login = async (req, res) => {
     }
     //3. Verify the password is valid
     const isValid = await bcrypt.compare(req.body.password, user.password);
-    if (!isValid) return res.status(400).send('Invalid Email or Password.')
+    if (!isValid) return res.status(400).send("Invalid Email or Password.");
 
     await user.save();
 
@@ -209,10 +209,8 @@ exports.ForgotPassword = async (req, res) => {
   }
 };
 
-
 exports.ResetOtp = async (req, res) => {
   try {
-
     const { token } = req.body;
     if (!token) {
       return res.status(403).json({
@@ -245,7 +243,7 @@ exports.ResetOtp = async (req, res) => {
       message: error.message,
     });
   }
-}
+};
 
 exports.ResetPassword = async (req, res) => {
   try {
