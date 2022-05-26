@@ -18,7 +18,7 @@ mongoose.connect(process.env.MONGO_URI, {
   });
 const app = express();
 const corsOptions = {
-  origin: 'http://localhost:8080',
+  origin: 'http://punmaew.sit.kmutt.ac.th:8080',
   credentials: true,
 };
 app.use(bodyParser.json());
