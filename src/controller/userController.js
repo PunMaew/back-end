@@ -11,7 +11,7 @@ const userSchema = Joi.object().keys({
   email: Joi.string().email({ minDomainSegments: 2 }),
   password: Joi.string().required().min(4),
   confirmPassword: Joi.string().valid(Joi.ref("password")),
-  location: {
+  address: {
     province: Joi.string().required(),
     // district: Joi.string().required(),
     zipCode: Joi.string().required(),

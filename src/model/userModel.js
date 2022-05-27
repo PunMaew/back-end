@@ -8,9 +8,10 @@ const userSchema = new Schema(
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     active: { type: Boolean, default: false },
-    location: {
+    address: {
       province: { type: String, required: true },
       district: { type: String, required: false, default: null },
+      area: { type: String, required: false, default: null },
       zipCode: { type: String, required: true },
     },
     password: { type: String, required: true },
@@ -18,6 +19,8 @@ const userSchema = new Schema(
     resetPasswordExpires: { type: Date, default: null },
     emailToken: { type: String, default: null },
     emailTokenExpires: { type: Date, default: null },
+    roleId: { type: String, default: '6d6a5444-c3c1-49a2-80f2-8a95d3f33761', required: false },
+    contactId: { type: String, default: null, required: false },
   },
   {
     timestamps: {

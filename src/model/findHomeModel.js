@@ -5,7 +5,7 @@ const findHomeSchema = new Schema(
         generalInfo: {
             catName: { type: String, required: true },
             color: { type: String, required: true },
-            breeds: { type: String, required: true },
+            breedId: { type: String, required: true },
             age: { type: String, required: true },
             location:
             {
