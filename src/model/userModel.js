@@ -9,10 +9,10 @@ const userSchema = new Schema(
     email: { type: String, required: true, unique: true },
     active: { type: Boolean, default: false },
     address: {
-      provincea: { type: String, required: true },
-      districta: { type: String, required: false, default: null },
+      province: { type: String, required: true },
+      district: { type: String, required: false, default: null },
       area: { type: String, required: false, default: null },
-      zipCodea: { type: String, required: true },
+      zipCode: { type: String, required: true },
     },
     password: { type: String, required: true },
     resetPasswordToken: { type: String, default: null },

@@ -12,9 +12,9 @@ const userSchema = Joi.object().keys({
   password: Joi.string().required().min(4),
   confirmPassword: Joi.string().valid(Joi.ref("password")),
   address: {
-    provincea: Joi.string().required(),
+    province: Joi.string().required(),
     // district: Joi.string().required(),
-    zipCodea: Joi.string().required(),
+    zipCode: Joi.string().required(),
   },
 
   //role: Joi.string().valid(Role.Admin, Role.User).required();
