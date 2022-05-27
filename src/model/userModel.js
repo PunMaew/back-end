@@ -11,7 +11,7 @@ const userSchema = new Schema(
     address: {
       province: { type: String, required: true },
       district: { type: String, required: false, default: null },
-      area: { type: String, required: false, default: null },
+      subDistrict: { type: String, required: false, default: null },
       zipCode: { type: String, required: true },
     },
     password: { type: String, required: true },
