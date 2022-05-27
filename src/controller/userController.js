@@ -36,7 +36,7 @@ exports.Signup = async (req, res) => {
       email: result.value.email,
     });
     if (user) {
-      return res.json({
+      return res.status(401).json({
         error: true,
         message: "Email is already in use",
       });
