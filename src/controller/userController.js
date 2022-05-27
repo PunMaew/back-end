@@ -11,10 +11,10 @@ const userSchema = Joi.object().keys({
   email: Joi.string().email({ minDomainSegments: 2 }),
   password: Joi.string().required().min(4),
   confirmPassword: Joi.string().valid(Joi.ref("password")),
-  location: {
-    province: Joi.string().required(),
+  address: {
+    provincea: Joi.string().required(),
     // district: Joi.string().required(),
-    zipCode: Joi.string().required(),
+    zipCodea: Joi.string().required(),
   },
 
   //role: Joi.string().valid(Role.Admin, Role.User).required();
