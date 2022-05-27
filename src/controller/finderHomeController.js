@@ -13,7 +13,7 @@ const findHomeSchema = Joi.object().keys(
             location:
             {
                 province: Joi.string().required(),
-                area: Joi.string().required(),
+                subDistrict: Joi.string().required(),
                 district: Joi.string().required(),
                 zipCode: Joi.string().required(),
             },
