@@ -225,7 +225,7 @@ exports.ResetOtp = async (req, res) => {
       resetPasswordExpires: { $gt: Date.now() },
     });
     if (!user) {
-      return res.send({
+      return res.status(400).json({
         error: true,
         message: "Password reset token is invalid or has expired.",
       });
