@@ -19,7 +19,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ghcr.io/skeletonbear/back-end:latest
+          tags: ghcr.io/skeletonbear/back-end-punmaew:latest
   deploy:
     needs: build
     runs-on: ubuntu-20.04
@@ -36,7 +36,7 @@ jobs:
           script: |
             cd Back-End
             git pull origin master
-            sudo docker rm -f backend
-            sudo docker rmi ghcr.io/skeletonbear/back-end
-            sudo docker pull ghcr.io/skeletonbear/back-end:latest
+            sudo docker rm -f backend 
+            sudo docker rmi ghcr.io/skeletonbear/back-end-punmaew
+            sudo docker pull ghcr.io/skeletonbear/back-end-punmaew:latest
             sudo docker-compose up -d
