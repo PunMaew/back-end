@@ -27,7 +27,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@main
       - name: pull images and deploy
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@main
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
@@ -35,7 +35,7 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           script: |
             cd back-end
-            git pull 
+            git pull origin main
             sudo docker rm -f back-end_server_1 
             sudo docker rmi ghcr.io/skeletonbear/back-end-punmaew
             sudo docker pull ghcr.io/skeletonbear/back-end-punmaew:latest
