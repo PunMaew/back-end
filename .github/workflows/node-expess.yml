@@ -27,7 +27,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@main
       - name: pull images and deploy
-        uses: appleboy/ssh-action@main
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
