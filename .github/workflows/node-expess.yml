@@ -36,7 +36,7 @@ jobs:
           script: |
             cd back-end
             git pull origin main
-            sudo docker rm -f back-end_server_1
-            sudo docker rmi ghcr.io/skeletonbear/back-end-punmaew
-            sudo docker pull ghcr.io/skeletonbear/back-end-punmaew:latest
-            sudo docker-compose up -d
+            docker rm -f back-end_server_1
+            docker rmi ghcr.io/skeletonbear/back-end-punmaew
+            docker pull ghcr.io/skeletonbear/back-end-punmaew:latest
+            docker-compose up -d
