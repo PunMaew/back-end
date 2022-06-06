@@ -24,15 +24,21 @@ jobs:
     needs: build
     runs-on: ubuntu-20.04
     steps:
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
       - name: Checkout code
         uses: actions/checkout@master
       - name: pull images and deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          password: ${{ secrets.SSH_PASSWORD }}
-          port: ${{ secrets.SSH_PORT }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: 'just-a-placeholder-so-we-dont-get-errors'
+          # host: ${{ secrets.SSH_HOST }}
+          # username: ${{ secrets.SSH_USERNAME }}
+          # password: ${{ secrets.SSH_PASSWORD }}
+          # port: ${{ secrets.SSH_PORT }}
           script: |
             cd back-end
             git pull origin main
