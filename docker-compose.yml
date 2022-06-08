@@ -1,6 +1,5 @@
 version : '3'
 services :
-  restart: always
   server :
     env_file:
       - .env
