@@ -8,7 +8,6 @@ services :
     image: backend:latest
     ports:
       - "3000:3000"
-      
 networks:
   default:
     external:
