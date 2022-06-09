@@ -5,7 +5,7 @@ services :
       - .env
     build: 
       context: .
-    image: backend:latest
+    image: ghcr.io/skeletonbear/back-end-punmaew:latest
     ports:
       - "3000:3000"
 networks:
