@@ -7,7 +7,7 @@ services :
       context: .
     image: ghcr.io/skeletonbear/back-end-punmaew:latest
     ports:
-      - "5443:5443"
+      - "5443:443"
 networks:
   default:
     external:
