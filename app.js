@@ -23,7 +23,7 @@ const app = express();
 // };
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); //optional
-app.get("/ping", (req, res) => {
+app.get("/api/ping", (req, res) => {
   return res.send({
     error: false,
     message: "Server is healthy",
