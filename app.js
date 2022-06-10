@@ -31,7 +31,7 @@ app.get("/api/ping", (req, res) => {
 });
 // app.use(cors(corsOptions));
 app.use(cors());
-app.use('/user', require('./routes/users'));
+app.use('/api/user', require('./routes/users'));
 app.use('/role', require('./routes/roles'));
 app.use('/breeds', require('./routes/breeds'));
 app.use('/contact', require('./routes/contacts'));
