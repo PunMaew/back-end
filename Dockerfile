@@ -8,6 +8,6 @@ RUN npm install --production
 
 COPY . .
 
-EXPOSE 80
+EXPOSE 5443
 
 CMD [ "node", "app.js" ]
