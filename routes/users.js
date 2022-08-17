@@ -17,4 +17,9 @@ router.patch("/resetotp",cleanBody,AuthController.ResetOtp);
 
 router.patch("/newpassword",cleanBody,AuthController.ResetPassword);
 
+router.get("/getallusers", cleanBody, AuthController.getAllUsers);
+
+router.get("/getUserByEmail", cleanBody, AuthController.getUserByEmail);
+
+
 module.exports = router;

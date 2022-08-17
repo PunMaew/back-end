@@ -20,6 +20,8 @@ const userSchema = Joi.object().keys({
   //role: Joi.string().valid(Role.Admin, Role.User).required();
 });
 
+
+
 exports.Signup = async (req, res) => {
   try {
     const result = userSchema.validate(req.body);
@@ -288,3 +290,54 @@ exports.ResetPassword = async (req, res) => {
     });
   }
 };
+
+exports.getAllUsers = async (req, res) => {
+  let users = await User.find();
+  try {
+    if (users.length < 1) {
+      return res.status(404).json({
+        error: "No users was found in DB"
+      });
+    }
+    return res.json(users);
+  } catch (err) {
+    return res.status(500).json({
+      error: "Something went wrong"
+    });
+  }
+};
+
+exports.getUserByEmail = async (req, res) => {
+  let email = await User.findOne({ email: req.body.email });
+  try {
+    if (!email) {
+      return res.status(404).json({
+        error: "Email not found"
+      });
+    }
+    return res.json(email);
+  } catch (err) {
+    return res.status(500).json({
+      error: "Something went wrong"
+    });
+  }
+};
+
+exports.me = function (req, res) {
+  if (req.headers && req.headers.authorization) {
+    var authorization = req.headers.authorization.split(' ')[1],
+      decoded;
+    try {
+      decoded = jwt.verify(authorization, secret.secretToken);
+    } catch (e) {
+      return res.status(401).send('unauthorized');
+    }
+    var userId = decoded.id;
+    // Fetch the user by id 
+    User.findOne({ _id: userId }).then(function (user) {
+      // Do something with the user
+      return res.send(200);
+    });
+  }
+  return res.send(500);
+}

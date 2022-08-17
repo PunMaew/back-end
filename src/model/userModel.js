@@ -19,8 +19,18 @@ const userSchema = new Schema(
     resetPasswordExpires: { type: Date, default: null },
     emailToken: { type: String, default: null },
     emailTokenExpires: { type: Date, default: null },
-    roleId: { type: String, default: '6d6a5444-c3c1-49a2-80f2-8a95d3f33761', required: false },
+    roleId: {
+      type: String,
+      default: "6d6a5444-c3c1-49a2-80f2-8a95d3f33761",
+      required: false,
+    },
     contactId: { type: String, default: null, required: false },
+    posts: [ /*test post and user*/ 
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "findHome",
+      },
+    ],
   },
   {
     timestamps: {

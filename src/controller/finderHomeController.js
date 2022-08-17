@@ -33,6 +33,12 @@ const findHomeSchema = Joi.object().keys(
         },
 
     })
+
+/*test post and user*/
+// userSchema.findById(req.User.id, (err, user) => {
+
+// },
+
 exports.AddFindHome = async (req, res) => {
     const result = findHomeSchema.validate(req.body);
 

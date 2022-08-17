@@ -29,6 +29,9 @@ app.get("/ping", (req, res) => {
     message: "Server is healthy",
   });
 });
+
+
+
 // app.use(cors(corsOptions));
 app.use(cors());
 app.use('/user', require('./routes/users'));
