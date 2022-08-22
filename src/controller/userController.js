@@ -4,6 +4,8 @@ require("dotenv").config();
 const { v4: uuid } = require("uuid");
 const { sendEmail } = require("../helpers/mailer");
 const User = require("../model/userModel");
+const { generateJwt } = require("../helpers/generateJwt");
+
 //Validate user schema
 const userSchema = Joi.object().keys({
   firstName: Joi.string().required(),
@@ -19,8 +21,6 @@ const userSchema = Joi.object().keys({
 
   //role: Joi.string().valid(Role.Admin, Role.User).required();
 });
-
-
 
 exports.Signup = async (req, res) => {
   try {
@@ -102,7 +102,23 @@ exports.Login = async (req, res) => {
     }
     //3. Verify the password is valid
     const isValid = await bcrypt.compare(req.body.password, user.password);
-    if (!isValid) return res.status(400).send("Invalid Email or Password.");
+    if (!isValid) {
+      return res.status(400).json({
+        error: true,
+        message: "Invalid Email or Password.",
+      });
+    }
+
+    //Generate Access token
+    const { error, token } = await generateJwt(user.email, user.userId);
+    if (error) {
+      return res.status(500).json({
+        error: true,
+        message: "Couldn't create access token. Please try again later",
+      });
+    }
+
+    user.accessToken = token;
 
     await user.save();
 
@@ -110,12 +126,32 @@ exports.Login = async (req, res) => {
     return res.send({
       success: true,
       message: "User logged in successfully",
+      accessToken: token, //Send it to the client
     });
   } catch (err) {
     console.error("Login error", err);
     return res.status(500).json({
       error: true,
       message: "Couldn't login. Please try again later.",
+    });
+  }
+};
+
+exports.Logout = async (req, res) => {
+  try {
+    const { id } = req.decoded;
+    let user = await User.findOne({ userId: id });
+    user.accessToken = "";
+    await user.save();
+    return res.send({ 
+      success: true, 
+      message: "User Logged out" 
+    });
+  } catch (error) {
+    console.error("user-logout-error", error);
+    return res.stat(500).json({
+      error: true,
+      message: error.message,
     });
   }
 };
