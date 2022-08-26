@@ -1,7 +1,9 @@
 const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
+const { v4: uuid } = require("uuid");
 const User = require("../model/userModel");
-
+const { request } = require("express");
+const { default: mongoose } = require("mongoose");
 
 const findHomeSchema = Joi.object().keys(
     {
@@ -34,15 +36,8 @@ const findHomeSchema = Joi.object().keys(
 
     })
 
-/*test post and user*/
-// userSchema.findById(req.User.id, (err, user) => {
-
-// },
-
 exports.AddFindHome = async (req, res) => {
     const result = findHomeSchema.validate(req.body);
-
-
     const newFindHome = new FindHome(result.value);
     await newFindHome.save();
     return res.status(200).json({
@@ -50,3 +45,34 @@ exports.AddFindHome = async (req, res) => {
         message: "Create FindHome Success",
     });
 }
+
+// Create and Save a new information cat
+exports.create = async (req, res) => {
+    try {
+        console.log(req.decoded._id);
+        //req.body.author = req.decoded.id;
+        req.body.author = new mongoose.Types.ObjectId(req.decoded._id);
+        const result = findHomeSchema.validate(req.body);
+        console.log("A");
+        const id = uuid(); //Generate unique id for the user.
+        console.log("B");
+        result.value.findHomeId = id;
+        console.log("C");
+        const newCreate = new FindHome(result.value);
+        console.log("D");
+        await newCreate.save();
+        return res.status(200).json({
+            success: true,
+            message: "Registration Success",
+        });
+    } catch (error) {
+        //console.log(newCreate);
+        console.log(error);
+        return res.status(500).send(error)
+        // json({
+        //     error: error,
+        //     message: "Cannot Create new information cat",
+        // });
+    }
+
+};

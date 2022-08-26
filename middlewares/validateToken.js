@@ -43,6 +43,7 @@ async function validateToken(req, res, next) {
     result["referralCode"] = user.referralCode;
 
     req.decoded = result;  // append the result in the "decoded" field of req
+    //console.log(req.decoded);
 
     next();
   } catch (err) {

@@ -44,8 +44,9 @@ exports.Signup = async (req, res) => {
       });
     }
     const hash = await User.hashPassword(result.value.password);
-    const id = uuid(); //Generate unique id for the user.
-    result.value.userId = id;
+    //const id = uuid(); //Generate unique id for the user. ไม่ต้องใช้ ไม่้เป็น object
+    //result.value.userId = id; ม่ต้องใช้ ไม่้เป็น object
+    
     //    remove the confirmPassword field from the result as we dont need to save this in the db.
     delete result.value.confirmPassword;
     result.value.password = hash;
@@ -110,7 +111,8 @@ exports.Login = async (req, res) => {
     }
 
     //Generate Access token
-    const { error, token } = await generateJwt(user.email, user.userId);
+    //const { error, token } = await generateJwt(user.email, user.userId); // user._id
+    const { error, token } = await generateJwt(user.email, user._id);
     if (error) {
       return res.status(500).json({
         error: true,
@@ -139,7 +141,7 @@ exports.Login = async (req, res) => {
 
 exports.Logout = async (req, res) => {
   try {
-    const { id } = req.decoded;
+    const { id } = req.decoded; //decode แล้วไปหาใน database
     let user = await User.findOne({ userId: id });
     user.accessToken = "";
     await user.save();

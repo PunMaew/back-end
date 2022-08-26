@@ -3,7 +3,6 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require('cors');
 
-
 require("dotenv").config();
 const PORT = 5443;
 mongoose.connect(process.env.MONGO_URI, {
@@ -16,11 +15,9 @@ mongoose.connect(process.env.MONGO_URI, {
   .catch((err) => {
     console.error("Mongo Connection Error", err);
   });
+
 const app = express();
-// const corsOptions = {
-//   origin: 'http://punmaew.sit.kmutt.ac.th:8080',
-//   credentials: true,
-// };
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); //optional
 app.get("/ping", (req, res) => {
@@ -29,8 +26,6 @@ app.get("/ping", (req, res) => {
     message: "Server is healthy",
   });
 });
-
-
 
 // app.use(cors(corsOptions));
 app.use(cors());

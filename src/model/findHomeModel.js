@@ -1,14 +1,15 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const findHomeSchema = new Schema({
+    findHomeId: { type: String, unique: true, required: true },
     generalInfo: {
         catName: { type: String, required: true },
         color: { type: String, required: true },
-        breedId: { type: String, required: true },
+        breeds: { type: String, required: true },
         age: { type: String, required: true },
         location: {
             province: { type: String, required: true },
-            area: { type: String, required: true },
+            subDistrict: { type: String, required: true },
             district: { type: String, required: true },
             zipCode: { type: String, required: true },
         },
@@ -26,12 +27,17 @@ const findHomeSchema = new Schema({
         facebook: { type: String, required: true },
         line: { type: String, required: true },
     },
-    author: [ /*test post and user*/ 
+    // author:  
+    //     {
+    //         type: String, required: true
+    //     },
+    author: 
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "user",
         },
-    ],
+    
+
 },
     {
         timestamps: {

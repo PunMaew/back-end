@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const Schema = mongoose.Schema;
 const userSchema = new Schema(
   {
-    userId: { type: String, unique: true, required: true },
+    //userId: { type: String, unique: true, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -26,12 +26,6 @@ const userSchema = new Schema(
       required: false,
     },
     contactId: { type: String, default: null, required: false },
-    posts: [ /*test post and user*/ 
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "findHome",
-      },
-    ],
   },
   {
     timestamps: {

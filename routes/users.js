@@ -22,7 +22,4 @@ router.get("/getallusers", cleanBody, AuthController.getAllUsers);
 
 router.get("/getUserByEmail", cleanBody, AuthController.getUserByEmail);
 
-//router.get("/logout", validateToken, AuthController.Logout);
-
-
 module.exports = router;
