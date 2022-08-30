@@ -329,7 +329,7 @@ exports.ResetPassword = async (req, res) => {
   }
 };
 
-exports.getAllUsers = async (req, res) => {
+exports.GetAllUsers = async (req, res) => {
   let users = await User.find();
   try {
     if (users.length < 1) {
@@ -345,7 +345,7 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-exports.getUserByEmail = async (req, res) => {
+exports.GetUserByEmail = async (req, res) => {
   let email = await User.findOne({ email: req.body.email });
   try {
     if (!email) {

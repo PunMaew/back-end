@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const findHomeSchema = new Schema({
-    findHomeId: { type: String, unique: true, required: true },
     generalInfo: {
         catName: { type: String, required: true },
         color: { type: String, required: true },

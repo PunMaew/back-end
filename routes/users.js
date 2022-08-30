@@ -18,8 +18,8 @@ router.patch("/resetotp",cleanBody,AuthController.ResetOtp);
 
 router.patch("/newpassword",cleanBody,AuthController.ResetPassword);
 
-router.get("/getallusers", cleanBody, AuthController.getAllUsers);
+router.get("/getallusers", cleanBody, AuthController.GetAllUsers);
 
-router.get("/getUserByEmail", cleanBody, AuthController.getUserByEmail);
+router.get("/getUserByEmail", cleanBody, AuthController.GetUserByEmail);
 
 module.exports = router;

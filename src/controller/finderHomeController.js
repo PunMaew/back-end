@@ -1,8 +1,6 @@
 const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
-const { v4: uuid } = require("uuid");
-const User = require("../model/userModel");
-const { request } = require("express");
+//const User = require("../model/userModel");
 const { default: mongoose } = require("mongoose");
 
 const findHomeSchema = Joi.object().keys(
@@ -36,43 +34,103 @@ const findHomeSchema = Joi.object().keys(
 
     })
 
-exports.AddFindHome = async (req, res) => {
-    const result = findHomeSchema.validate(req.body);
-    const newFindHome = new FindHome(result.value);
-    await newFindHome.save();
-    return res.status(200).json({
-        success: true,
-        message: "Create FindHome Success",
-    });
-}
-
 // Create and Save a new information cat
-exports.create = async (req, res) => {
+exports.Create = async (req, res) => {
     try {
-        console.log(req.decoded._id);
         //req.body.author = req.decoded.id;
         req.body.author = new mongoose.Types.ObjectId(req.decoded._id);
         const result = findHomeSchema.validate(req.body);
-        console.log("A");
-        const id = uuid(); //Generate unique id for the user.
-        console.log("B");
-        result.value.findHomeId = id;
-        console.log("C");
         const newCreate = new FindHome(result.value);
-        console.log("D");
         await newCreate.save();
+
         return res.status(200).json({
             success: true,
             message: "Registration Success",
         });
     } catch (error) {
-        //console.log(newCreate);
         console.log(error);
         return res.status(500).send(error)
-        // json({
-        //     error: error,
-        //     message: "Cannot Create new information cat",
-        // });
     }
 
 };
+
+exports.FindAllPost = async (req, res) => {
+    console.log("A");
+    const getAllPost = await FindHome.find();
+    console.log("A");
+    try {
+        if (getAllPost.length < 1) {
+            return res.status(404).json({
+                error: "No post was found in DB"
+            });
+        }
+        return res.json(getAllPost);
+    } catch (err) {
+        return res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+};
+
+exports.FindOnePost = async (req, res) => {
+    //const id = await FindHome.findOne(req.body._id);
+    const id = req.query.id;
+    FindHome.findById(id)
+        .then(data => {
+            if (!data)
+                res.status(404).send({ message: "Not found Post with id " + id });
+            else res.send(data);
+        })
+        .catch(err => {
+            res
+                .status(500)
+                .send({ message: "Error retrieving Post with id=" + id });
+        });
+}
+
+exports.DeletePost = (req, res) => {
+    const id = req.query.id;
+
+    FindHome.findByIdAndRemove(id)
+        .then(data => {
+            if (!data) {
+                res.status(404).send({
+                    message: `Cannot delete Article with id=${id}. Maybe Article was not found!`
+                });
+            } else {
+                res.send({
+                    message: "Article was deleted successfully!"
+                });
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Could not delete Article with id=" + id
+            });
+        });
+};
+
+//test 
+// exports.update = (req, res) => {
+//     if (!req.body) {
+//         return res.status(400).send({
+//             message: "Data to update can not be empty!"
+//         });
+//     }
+
+//     const id = req.params.id;
+
+//     Article.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+//         .then(data => {
+//             if (!data) {
+//                 res.status(404).send({
+//                     message: `Cannot update Article with id=${id}. Maybe Article was not found!`
+//                 });
+//             } else res.send({ message: "Article was updated successfully." });
+//         })
+//         .catch(err => {
+//             res.status(500).send({
+//                 message: "Error updating Article with id=" + id
+//             });
+//         });
+// };
