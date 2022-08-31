@@ -95,42 +95,42 @@ exports.DeletePost = (req, res) => {
         .then(data => {
             if (!data) {
                 res.status(404).send({
-                    message: `Cannot delete Article with id=${id}. Maybe Article was not found!`
+                    message: `Cannot delete FindHome with id=${id}. Maybe FindHome was not found!`
                 });
             } else {
                 res.send({
-                    message: "Article was deleted successfully!"
+                    message: "FindHome was deleted successfully!"
                 });
             }
         })
         .catch(err => {
             res.status(500).send({
-                message: "Could not delete Article with id=" + id
+                message: "Could not delete FindHome with id=" + id
             });
         });
 };
 
 //test 
-// exports.update = (req, res) => {
-//     if (!req.body) {
-//         return res.status(400).send({
-//             message: "Data to update can not be empty!"
-//         });
-//     }
+exports.update = (req, res) => {
+    if (!req.body) {
+        return res.status(400).send({
+            message: "Data to update can not be empty!"
+        });
+    }
 
-//     const id = req.params.id;
+    const id = req.query.id;
 
-//     Article.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-//         .then(data => {
-//             if (!data) {
-//                 res.status(404).send({
-//                     message: `Cannot update Article with id=${id}. Maybe Article was not found!`
-//                 });
-//             } else res.send({ message: "Article was updated successfully." });
-//         })
-//         .catch(err => {
-//             res.status(500).send({
-//                 message: "Error updating Article with id=" + id
-//             });
-//         });
-// };
+    FindHome.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+        .then(data => {
+            if (!data) {
+                res.status(404).send({
+                    message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
+                });
+            } else res.send({ message: "FindHome was updated successfully." });
+        })
+        .catch(err => {
+            res.status(500).send({
+                message: "Error updating FindHome with id=" + id
+            });
+        });
+};

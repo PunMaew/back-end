@@ -8,5 +8,6 @@ router.post("/create", validateToken, FindHomeController.Create);
 router.get("/allPost", cleanBody, FindHomeController.FindAllPost);
 router.get("/onePost", cleanBody, FindHomeController.FindOnePost);
 router.delete("/deletePost", cleanBody, FindHomeController.DeletePost);
+router.put("/updatePost", cleanBody, FindHomeController.update);
 
 module.exports = router;
