@@ -1,6 +1,5 @@
 const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
-//const User = require("../model/userModel");
 const { default: mongoose } = require("mongoose");
 
 const findHomeSchema = Joi.object().keys(
@@ -34,10 +33,8 @@ const findHomeSchema = Joi.object().keys(
 
     })
 
-// Create and Save a new information cat
 exports.Create = async (req, res) => {
     try {
-        //req.body.author = req.decoded.id;
         req.body.author = new mongoose.Types.ObjectId(req.decoded._id);
         const result = findHomeSchema.validate(req.body);
         const newCreate = new FindHome(result.value);
@@ -55,9 +52,7 @@ exports.Create = async (req, res) => {
 };
 
 exports.FindAllPost = async (req, res) => {
-    console.log("A");
     const getAllPost = await FindHome.find();
-    console.log("A");
     try {
         if (getAllPost.length < 1) {
             return res.status(404).json({
@@ -73,7 +68,6 @@ exports.FindAllPost = async (req, res) => {
 };
 
 exports.FindOnePost = async (req, res) => {
-    //const id = await FindHome.findOne(req.body._id);
     const id = req.query.id;
     FindHome.findById(id)
         .then(data => {
@@ -110,8 +104,7 @@ exports.DeletePost = (req, res) => {
         });
 };
 
-//test 
-exports.update = (req, res) => {
+exports.Update = (req, res) => {
     if (!req.body) {
         return res.status(400).send({
             message: "Data to update can not be empty!"
@@ -134,3 +127,7 @@ exports.update = (req, res) => {
             });
         });
 };
+
+// exports.Upload = (req, res) => {
+//     res.send(req.files)
+// };

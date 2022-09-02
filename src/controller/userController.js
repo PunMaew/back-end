@@ -63,6 +63,7 @@ exports.Signup = async (req, res) => {
     result.value.emailTokenExpires = new Date(expiry);
     const newUser = new User(result.value);
     await newUser.save();
+    
     return res.status(200).json({
       success: true,
       message: "Registration Success",
@@ -77,6 +78,70 @@ exports.Signup = async (req, res) => {
 };
 
 exports.Login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        error: true,
+        message: "Cannot authorize user.",
+      });
+    }
+    //1. Find if any account with that email exists in DB
+    const user = await User.findOne({ email: email });
+    // NOT FOUND - Throw error
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        message: "Account not found",
+      });
+    }
+    //2. Throw error if account is not activated
+    if (!user.active) {
+      return res.status(400).json({
+        error: true,
+        message: "You must verify your email to activate your account",
+      });
+    }
+    //3. Verify the password is valid
+    const isValid = await bcrypt.compare(req.body.password, user.password);
+    if (!isValid) {
+      return res.status(400).json({
+        error: true,
+        message: "Invalid Email or Password.",
+      });
+    }
+
+    //Generate Access token
+    //const { error, token } = await generateJwt(user.email, user.userId); // user._id
+    const { error, token } = await generateJwt(user.email, user._id);
+    if (error) {
+      return res.status(500).json({
+        error: true,
+        message: "Couldn't create access token. Please try again later",
+      });
+    }
+
+    user.accessToken = token;
+
+    await user.save();
+
+    //Success
+    return res.send({
+      success: true,
+      message: "User logged in successfully",
+      accessToken: token, //Send it to the client
+    });
+  } catch (err) {
+    console.error("Login error", err);
+    return res.status(500).json({
+      error: true,
+      message: "Couldn't login. Please try again later.",
+    });
+  }
+};
+
+
+exports.LoginAdminPunmeaw = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -379,3 +444,10 @@ exports.me = function (req, res) {
   }
   return res.send(500);
 }
+
+//7. Admin dashboard - DeleteMember
+exports.DeleteMember = function (req, res) {
+}
+
+
+

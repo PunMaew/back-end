@@ -11,9 +11,11 @@ mongoose.connect(process.env.MONGO_URI, {
 })
   .then(() => {
     console.log("Database connection Success.");
+
   })
   .catch((err) => {
     console.error("Mongo Connection Error", err);
+
   });
 
 const app = express();

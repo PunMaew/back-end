@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-
 const User = require("../src/model/userModel");
 
 async function validateToken(req, res, next) {
@@ -61,6 +60,8 @@ async function validateToken(req, res, next) {
     }
     return res.status(403).json(result);
   }
-}
 
-module.exports = { validateToken };
+};
+
+
+module.exports = {validateToken};
