@@ -446,8 +446,8 @@ exports.me = function (req, res) {
 }
 
 //7. Admin dashboard - DeleteMember
-exports.DeleteMember = function (req, res) {
-}
+// exports.DeleteMember = function (req, res) {
+// }
 
 
 
