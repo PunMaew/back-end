@@ -35,7 +35,8 @@ const findHomeSchema = Joi.object().keys(
 
 exports.Create = async (req, res) => {
     try {
-        req.body.author = new mongoose.Types.ObjectId(req.decoded._id);
+        req.body.author = req.decoded.id;
+        //req.body.author = new mongoose.Types.ObjectId(req.decoded._id);
         const result = findHomeSchema.validate(req.body);
         const newCreate = new FindHome(result.value);
         await newCreate.save();

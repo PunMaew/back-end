@@ -44,8 +44,8 @@ exports.Signup = async (req, res) => {
       });
     }
     const hash = await User.hashPassword(result.value.password);
-    //const id = uuid(); //Generate unique id for the user. ไม่ต้องใช้ ไม่้เป็น object
-    //result.value.userId = id; ม่ต้องใช้ ไม่้เป็น object
+    const id = uuid(); //Generate unique id for the user. ไม่ต้องใช้ ไม่้เป็น object
+    result.value.userId = id; 
     
     //    remove the confirmPassword field from the result as we dont need to save this in the db.
     delete result.value.confirmPassword;
