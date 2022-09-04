@@ -120,8 +120,11 @@ exports.Login = async (req, res) => {
         message: "Couldn't create access token. Please try again later",
       });
     }
+    const user_body = await User.findOne({ email: req.body.email });
 
     user.accessToken = token;
+    user.bodyUser = user_body;
+    
 
     await user.save();
 
@@ -130,6 +133,7 @@ exports.Login = async (req, res) => {
       success: true,
       message: "User logged in successfully",
       accessToken: token, //Send it to the client
+      bodyUser: user_body,
     });
   } catch (err) {
     console.error("Login error", err);
