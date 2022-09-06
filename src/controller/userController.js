@@ -210,7 +210,7 @@ exports.LoginAdminPunmeaw = async (req, res) => {
 
 exports.Logout = async (req, res) => {
   try {
-    const { id } = req.decoded; //decode แล้วไปหาใน database
+    const { id } = req.decoded; 
     //let user = await User.findOne({ userId: id });
     let user = await User.findOne({ _id: id });
     user.accessToken = "";
