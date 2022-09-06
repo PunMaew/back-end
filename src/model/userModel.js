@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const Schema = mongoose.Schema;
 const userSchema = new Schema(
   {
-    userId: { type: String, unique: true, required: true },
+    //userId: { type: String, unique: true, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -34,7 +34,7 @@ const userSchema = new Schema(
     },
   }
 );
-// const User = new Schema({userSchema}, { collection: 'data' });
+
 mongoose.pluralize(null);
 const User = mongoose.model("user", userSchema);
 module.exports = User;

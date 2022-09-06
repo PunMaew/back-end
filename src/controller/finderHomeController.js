@@ -2,6 +2,7 @@ const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
 const { default: mongoose } = require("mongoose");
 
+
 const findHomeSchema = Joi.object().keys(
     {
         generalInfo: {
@@ -35,8 +36,7 @@ const findHomeSchema = Joi.object().keys(
 
 exports.Create = async (req, res) => {
     try {
-        req.body.author = req.decoded.id;
-        //req.body.author = new mongoose.Types.ObjectId(req.decoded._id);
+        req.body.author = new mongoose.Types.ObjectId(req.decoded.id);
         const result = findHomeSchema.validate(req.body);
         const newCreate = new FindHome(result.value);
         await newCreate.save();
@@ -69,23 +69,23 @@ exports.FindAllPost = async (req, res) => {
 };
 
 exports.FindOnePost = async (req, res) => {
-    const id = req.query.id;
-    FindHome.findById(id)
-        .then(data => {
-            if (!data)
-                res.status(404).send({ message: "Not found Post with id " + id });
-            else res.send(data);
-        })
-        .catch(err => {
-            res
-                .status(500)
-                .send({ message: "Error retrieving Post with id=" + id });
+    try {
+        const id = req.query.id;
+        const data = await FindHome.findById(id).populate('author').exec();
+        if (!data) 
+        return res.status(404).send({
+            message: "Not found Post with id " + id
         });
-}
+        return res.send({
+            data: data,
+        });
+    } catch (err) {
+        res.status(500).send({ message: "Error retrieving Post with id=" + id });
+    }
+};
 
 exports.DeletePost = (req, res) => {
     const id = req.query.id;
-
     FindHome.findByIdAndRemove(id)
         .then(data => {
             if (!data) {

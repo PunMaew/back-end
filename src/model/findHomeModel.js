@@ -4,8 +4,8 @@ const findHomeSchema = new Schema({
     generalInfo: {
         catName: { type: String, required: true },
         color: { type: String, required: true },
-        breeds: { type: String, required: true },
-        age: { type: String, required: true },
+        breeds: { type: String, required: false, default: "-"},
+        age: { type: String, required: false, default: "-"},
         location: {
             province: { type: String, required: true },
             subDistrict: { type: String, required: true },
@@ -13,30 +13,29 @@ const findHomeSchema = new Schema({
             zipCode: { type: String, required: true },
         },
         receiveVaccine: { type: String, required: true },
-        receiveDate: { type: String, required: true },
-        disease: { type: String, required: true },
+        receiveDate: { type: String, required: false, default: "-" },
+        disease: { type: String, required: false, default: "-" },
         neutered: { type: String, required: true },
-        image: { type: String, required: true },
+        image: { type: String, required: false },
         gender: { type: String, required: true },
-        others: { type: String, required: true },
+        characteristic: { type: String, required: true },
+        others: { type: String, required: false, default: "-" },
     },
     contact: {
         contactName: { type: String, required: true },
         tel: { type: String, required: true },
-        facebook: { type: String, required: true },
-        line: { type: String, required: true },
-    },
-    // author:  
-    //     {
-    //         type: String, required: true
-    //     },
-    author: 
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "user",
+        facebook: { type: String, required: false, default: "-" },
+        line: {
+            type: String,
+            default: "-",
+            required: false,
         },
-    
-
+    },
+    author:
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "user",
+    },
 },
     {
         timestamps: {
