@@ -1,12 +1,10 @@
 const bcrypt = require("bcryptjs/dist/bcrypt");
 const Joi = require("joi");
 require("dotenv").config();
-const { v4: uuid } = require("uuid");
 const { sendEmail } = require("../helpers/mailer");
 const User = require("../model/userModel");
 const { generateJwt } = require("../helpers/generateJwt");
 
-//Validate user schema
 const userSchema = Joi.object().keys({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
@@ -143,7 +141,6 @@ exports.Login = async (req, res) => {
     });
   }
 };
-
 
 exports.LoginAdminPunmeaw = async (req, res) => {
   try {
