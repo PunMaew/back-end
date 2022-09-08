@@ -4,11 +4,15 @@ require("dotenv").config();
 const { sendEmail } = require("../helpers/mailer");
 const User = require("../model/userModel");
 const { generateJwt } = require("../helpers/generateJwt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const userSchema = Joi.object().keys({
   firstName: Joi.string().required(),
   lastName: Joi.string().required(),
-  email: Joi.string().email({ minDomainSegments: 2 }),
+  email: Joi.string().email({
+    minDomainSegments: 2,
+  }),
   password: Joi.string().required().min(4),
   confirmPassword: Joi.string().valid(Joi.ref("password")),
   address: {
@@ -43,8 +47,8 @@ exports.Signup = async (req, res) => {
     }
     const hash = await User.hashPassword(result.value.password);
     //const id = uuid(); //Generate unique id for the user.
-    //result.value.userId = id; 
-    
+    //result.value.userId = id;
+
     //    remove the confirmPassword field from the result as we dont need to save this in the db.
     delete result.value.confirmPassword;
     result.value.password = hash;
@@ -61,7 +65,7 @@ exports.Signup = async (req, res) => {
     result.value.emailTokenExpires = new Date(expiry);
     const newUser = new User(result.value);
     await newUser.save();
-    
+
     return res.status(200).json({
       success: true,
       message: "Registration Success",
@@ -85,7 +89,9 @@ exports.Login = async (req, res) => {
       });
     }
     //1. Find if any account with that email exists in DB
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({
+      email: email,
+    });
     // NOT FOUND - Throw error
     if (!user) {
       return res.status(404).json({
@@ -118,11 +124,12 @@ exports.Login = async (req, res) => {
         message: "Couldn't create access token. Please try again later",
       });
     }
-    const user_body = await User.findOne({ email: req.body.email });
+    const user_body = await User.findOne({
+      email: req.body.email,
+    });
 
     user.accessToken = token;
     user.bodyUser = user_body;
-    
 
     await user.save();
 
@@ -152,7 +159,9 @@ exports.LoginAdminPunmeaw = async (req, res) => {
       });
     }
     //1. Find if any account with that email exists in DB
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({
+      email: email,
+    });
     // NOT FOUND - Throw error
     if (!user) {
       return res.status(404).json({
@@ -207,14 +216,16 @@ exports.LoginAdminPunmeaw = async (req, res) => {
 
 exports.Logout = async (req, res) => {
   try {
-    const { id } = req.decoded; 
+    const { id } = req.decoded;
     //let user = await User.findOne({ userId: id });
-    let user = await User.findOne({ _id: id });
+    let user = await User.findOne({
+      _id: id,
+    });
     user.accessToken = "";
     await user.save();
-    return res.send({ 
-      success: true, 
-      message: "User Logged out" 
+    return res.send({
+      success: true,
+      message: "User Logged out",
     });
   } catch (error) {
     console.error("user-logout-error", error);
@@ -238,7 +249,9 @@ exports.Activate = async (req, res) => {
     const user = await User.findOne({
       email: email,
       emailToken: code,
-      emailTokenExpires: { $gt: Date.now() }, // check if the code is expired
+      emailTokenExpires: {
+        $gt: Date.now(),
+      }, // check if the code is expired
     });
     if (!user) {
       return res.status(400).json({
@@ -329,7 +342,9 @@ exports.ResetOtp = async (req, res) => {
 
     const user = await User.findOne({
       resetPasswordToken: req.body.token,
-      resetPasswordExpires: { $gt: Date.now() },
+      resetPasswordExpires: {
+        $gt: Date.now(),
+      },
     });
     if (!user) {
       return res.status(400).json({
@@ -364,7 +379,9 @@ exports.ResetPassword = async (req, res) => {
     }
     const user = await User.findOne({
       resetPasswordToken: req.body.token,
-      resetPasswordExpires: { $gt: Date.now() },
+      resetPasswordExpires: {
+        $gt: Date.now(),
+      },
     });
     if (!user) {
       return res.send({
@@ -401,55 +418,68 @@ exports.GetAllUsers = async (req, res) => {
   try {
     if (users.length < 1) {
       return res.status(404).json({
-        error: "No users was found in DB"
+        error: "No users was found in DB",
       });
     }
     return res.json(users);
   } catch (err) {
     return res.status(500).json({
-      error: "Something went wrong"
+      error: "Something went wrong",
     });
   }
 };
 
 exports.GetUserByEmail = async (req, res) => {
-  let email = await User.findOne({ email: req.body.email });
+  let email = await User.findOne({
+    email: req.body.email,
+  });
   try {
     if (!email) {
       return res.status(404).json({
-        error: "Email not found"
+        error: "Email not found",
       });
     }
     return res.json(email);
   } catch (err) {
     return res.status(500).json({
-      error: "Something went wrong"
+      error: "Something went wrong",
     });
   }
 };
 
-exports.me = function (req, res) {
+exports.getUser = async (req, res) => {
   if (req.headers && req.headers.authorization) {
-    var authorization = req.headers.authorization.split(' ')[1],
+    var authorization = req.headers.authorization.split(" ")[1],
       decoded;
     try {
-      decoded = jwt.verify(authorization, secret.secretToken);
+      decoded = jwt.verify(authorization, process.env.JWT_SECRET);
     } catch (e) {
-      return res.status(401).send('unauthorized');
+      return res.status(401).send("unauthorized");
     }
     var userId = decoded.id;
-    // Fetch the user by id 
-    User.findOne({ _id: userId }).then(function (user) {
-      // Do something with the user
-      return res.send(200);
-    });
+    // Fetch the user by id
+    try {
+      const user = await User.findOne({
+        _id: userId,
+      });
+      console.log(user);
+      if (user) {
+        return res.send({
+          status: 200,
+          user: user,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      return res.send({
+        status: 500,
+        error: error.message,
+      });
+    }
   }
   return res.send(500);
-}
+};
 
 //7. Admin dashboard - DeleteMember
 // exports.DeleteMember = function (req, res) {
 // }
-
-
-
