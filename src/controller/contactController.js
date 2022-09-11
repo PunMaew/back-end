@@ -6,6 +6,7 @@ const contactSchema = Joi.object().keys({
     tel: Joi.string().required(),
     facebook: Joi.string().required(),
     line: Joi.string().required()
+    
 });
 
 exports.AddContact = async (req, res) => {
