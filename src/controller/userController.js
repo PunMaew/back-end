@@ -1,6 +1,5 @@
 const bcrypt = require("bcryptjs/dist/bcrypt");
 const Joi = require("joi");
-require("dotenv").config();
 const { sendEmail } = require("../helpers/mailer");
 const User = require("../model/userModel");
 const { generateJwt } = require("../helpers/generateJwt");
@@ -503,8 +502,3 @@ exports.EditProfile = (req, res) => {
           });
       });
 };
-
-
-//7. Admin dashboard - DeleteMember
-// exports.DeleteMember = function (req, res) {
-// }

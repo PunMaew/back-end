@@ -134,7 +134,3 @@ exports.GetMyPost = async (req, res) => {
     const mypost = await FindHome.find({author: id});
     return res.send({mypost});
 };
-
-// exports.Upload = (req, res) => {
-//     res.send(req.files)
-// };
