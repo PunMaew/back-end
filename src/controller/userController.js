@@ -495,7 +495,7 @@ exports.EditProfile = (req, res) => {
               res.status(404).send({
                   message: `Cannot update User with id=${id}. Maybe User was not found!`
               });
-          } else res.send({ message: "User was updated successfully." });
+          } else res.status(200).send({ message: "User was updated successfully." });
       })
       .catch(err => {
           res.status(500).send({
