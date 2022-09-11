@@ -2,7 +2,6 @@ const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
 const { default: mongoose } = require("mongoose");
 
-
 const findHomeSchema = Joi.object().keys(
     {
         generalInfo: {

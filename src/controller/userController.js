@@ -4,7 +4,6 @@ const { sendEmail } = require("../helpers/mailer");
 const User = require("../model/userModel");
 const { generateJwt } = require("../helpers/generateJwt");
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
 
 const userSchema = Joi.object().keys({
   firstName: Joi.string().required(),
