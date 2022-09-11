@@ -7,7 +7,6 @@ const articleSchema = Joi.object().keys({
 
 exports.AddArticle = async (req, res) => {
     const result = articleSchema.validate(req.body);
-
     const newArticle = new Article(result.value);
     await newArticle.save();
     return res.status(200).json({
