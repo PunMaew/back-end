@@ -4,8 +4,8 @@ const findHomeSchema = new Schema({
     generalInfo: {
         catName: { type: String, required: true },
         color: { type: String, required: true },
-        breeds: { type: String, required: false, default: "-"},
-        age: { type: String, required: false, default: "-"},
+        breeds: { type: String, required: false, default: "-" },
+        age: { type: String, required: false, default: "-" },
         location: {
             province: { type: String, required: true },
             subDistrict: { type: String, required: true },
@@ -18,7 +18,7 @@ const findHomeSchema = new Schema({
         neutered: { type: String, required: true },
         image: { type: String, required: false },
         gender: { type: String, required: true },
-        characteristic: { type: String, required: true },
+        characteristic: { type: Array, required: true },
         others: { type: String, required: false, default: "-" },
     },
     contact: {
@@ -26,9 +26,7 @@ const findHomeSchema = new Schema({
         tel: { type: String, required: true },
         facebook: { type: String, required: false, default: "-" },
         line: {
-            type: String,
-            default: "-",
-            required: false,
+            type: String, default: "-", required: false,
         },
     },
     author:
