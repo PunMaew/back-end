@@ -120,7 +120,7 @@ exports.Update = (req, res) => {
                 res.status(404).send({
                     message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
                 });
-            } else res.send({ message: "FindHome was updated successfully." });
+            } else res.status(200).send({ message: "FindHome was updated successfully." });
         })
         .catch(err => {
             res.status(500).send({
