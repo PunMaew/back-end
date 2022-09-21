@@ -22,6 +22,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); //optional
+
 app.get("/ping", (req, res) => {
   return res.send({
     error: false,
@@ -32,9 +33,6 @@ app.get("/ping", (req, res) => {
 // app.use(cors(corsOptions));
 app.use(cors());
 app.use('/user', require('./routes/users'));
-app.use('/role', require('./routes/roles'));
-app.use('/breeds', require('./routes/breeds'));
-app.use('/contact', require('./routes/contacts'));
 app.use('/article', require('./routes/articles'));
 app.use('/findHome', require('./routes/finderHome'));
 

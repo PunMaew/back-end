@@ -33,6 +33,7 @@ const findHomeSchema = Joi.object().keys(
 
     })
 
+//--------------------- User ---------------------
 exports.Create = async (req, res) => {
     try {
         req.body.author = new mongoose.Types.ObjectId(req.decoded.id);
@@ -51,6 +52,13 @@ exports.Create = async (req, res) => {
 
 };
 
+exports.GetMyPost = async (req, res) => {
+    const id = req.query.id;
+    const mypost = await FindHome.find({author: id});
+    return res.send({mypost});
+};
+
+//--------------------- User and Admin ---------------------
 exports.FindAllPost = async (req, res) => {
     const getAllPost = await FindHome.find();
     try {
@@ -128,8 +136,4 @@ exports.Update = (req, res) => {
         });
 };
 
-exports.GetMyPost = async (req, res) => {
-    const id = req.query.id;
-    const mypost = await FindHome.find({author: id});
-    return res.send({mypost});
-};
+

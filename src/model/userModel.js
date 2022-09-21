@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 const Schema = mongoose.Schema;
 const userSchema = new Schema(
   {
-    //userId: { type: String, unique: true, required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     tel: { type: String, required:false ,default: null},
@@ -21,11 +20,6 @@ const userSchema = new Schema(
     accessToken: { type: String, default: null }, // JWT token
     emailToken: { type: String, default: null },
     emailTokenExpires: { type: Date, default: null },
-    roleId: {
-      type: String,
-      default: "6d6a5444-c3c1-49a2-80f2-8a95d3f33761",
-      required: false,
-    },
     contactId: { type: String, default: null, required: false },
   },
   {

@@ -34,6 +34,7 @@ const findHomeSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
     },
+    statusbar: { type: String, required: false, default: "ยังไม่ถูกรับเลี้ยง" },
 },
     {
         timestamps: {
