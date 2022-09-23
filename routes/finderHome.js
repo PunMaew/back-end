@@ -10,5 +10,5 @@ router.get("/onePost", cleanBody, FindHomeController.FindOnePost);
 router.delete("/deletePost", cleanBody, FindHomeController.DeletePost);
 router.put("/updatePost", cleanBody, FindHomeController.Update);
 router.get("/getMyPost", cleanBody, FindHomeController.GetMyPost);
-
+router.get("/RandomPost", cleanBody, FindHomeController.GetMultipleRandom);
 module.exports = router;

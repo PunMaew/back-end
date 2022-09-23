@@ -54,8 +54,8 @@ exports.Create = async (req, res) => {
 
 exports.GetMyPost = async (req, res) => {
     const id = req.query.id;
-    const mypost = await FindHome.find({author: id});
-    return res.send({mypost});
+    const mypost = await FindHome.find({ author: id });
+    return res.send({ mypost });
 };
 
 //--------------------- User and Admin ---------------------
@@ -79,10 +79,10 @@ exports.FindOnePost = async (req, res) => {
     try {
         const id = req.query.id;
         const data = await FindHome.findById(id).populate('author').exec();
-        if (!data) 
-        return res.status(404).send({
-            message: "Not found Post with id " + id
-        });
+        if (!data)
+            return res.status(404).send({
+                message: "Not found Post with id " + id
+            });
         return res.send({
             data: data,
         });
@@ -135,5 +135,21 @@ exports.Update = (req, res) => {
             });
         });
 };
+
+exports.GetMultipleRandom = async (req, res) => {
+    const getAllPost = await FindHome.find();
+    if (!getAllPost || getAllPost.length === 0) {
+        return res.status(201).send({
+            message: "No Post Now"
+        });
+    }
+    function getMultipleRandom(arr, num) {
+        const shuffled = [...arr].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, num);
+    }
+    const randomPost = getMultipleRandom(getAllPost,3)
+    return res.status(200).json(randomPost);
+}
+
 
 
