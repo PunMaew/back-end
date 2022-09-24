@@ -26,7 +26,7 @@ router.get("/getUser", validateToken, AuthController.getUser);
 
 router.put("/editProfile", cleanBody, AuthController.EditProfile);
 
-router.put("/againOTP", cleanBody, AuthController.AgainOTP);
+router.put("/againOTP", cleanBody, AuthController.AgainOTPSignup);
 
 
 

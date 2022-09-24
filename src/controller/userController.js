@@ -133,8 +133,6 @@ exports.IdealCat =async (req, res) => {
 // }
 };
 
-
-
 //--------------------- User and Admin ---------------------
 exports.Signup = async (req, res) => {
   try {
@@ -390,7 +388,7 @@ exports.ResetPassword = async (req, res) => {
   }
 };
 
-exports.AgainOTP = async (req, res) => {
+exports.AgainOTPSignup = async (req, res) => {
   const id = req.query.id;
   const data = await User.findById(id);
   try {
