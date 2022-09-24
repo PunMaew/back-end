@@ -115,6 +115,26 @@ exports.EditProfile = (req, res) => {
     });
 };
 
+exports.IdealCat =async (req, res) => {
+//   try {
+//     req.body.authorAdmin = new mongoose.Types.ObjectId(req.decoded.id);
+//     const result = articleSchema.validate(req.body);
+//     const newArticle = new Article(result.value);
+//     console.log(newArticle);
+//     await newArticle.save();
+
+//     return res.status(200).json({
+//         success: true,
+//         message: "Create Success",
+//     });
+// } catch (error) {
+//     console.log(error);
+//     return res.status(500).send(error)
+// }
+};
+
+
+
 //--------------------- User and Admin ---------------------
 exports.Signup = async (req, res) => {
   try {
@@ -407,8 +427,6 @@ exports.AgainOTP = async (req, res) => {
 }
 
 //--------------------- Admin ---------------------
-
-
 
 exports.LoginAdminPunmeaw = async (req, res) => {
   try {

@@ -20,7 +20,7 @@ const userSchema = new Schema(
     accessToken: { type: String, default: null }, // JWT token
     emailToken: { type: String, default: null },
     emailTokenExpires: { type: Date, default: null },
-    contactId: { type: String, default: null, required: false },
+    idealCat: { type: Array, required: true },
   },
   {
     timestamps: {
