@@ -6,6 +6,7 @@ const findHomeSchema = new Schema({
         color: { type: String, required: true },
         breeds: { type: String, required: false, default: "-" },
         age: { type: String, required: false, default: "-" },
+        ageRange : { type: String, required: true },
         location: {
             province: { type: String, required: true },
             subDistrict: { type: String, required: true },
