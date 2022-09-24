@@ -15,11 +15,9 @@ const userSchema = Joi.object().keys({
   confirmPassword: Joi.string().valid(Joi.ref("password")),
   address: {
     province: Joi.string().required(),
-    // district: Joi.string().required(),
     zipCode: Joi.string().required(),
   },
 
-  //role: Joi.string().valid(Role.Admin, Role.User).required();
 });
 
 //--------------------- User ---------------------
@@ -95,26 +93,26 @@ exports.Login = async (req, res) => {
 
 exports.EditProfile = (req, res) => {
   if (!req.body) {
-      return res.status(400).send({
-          message: "Data to update can not be empty!"
-      });
+    return res.status(400).send({
+      message: "Data to update can not be empty!"
+    });
   }
 
   const id = req.query.id;
 
   User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-      .then(data => {
-          if (!data) {
-              res.status(404).send({
-                  message: `Cannot update User with id=${id}. Maybe User was not found!`
-              });
-          } else res.status(200).send({ message: "User was updated successfully." });
-      })
-      .catch(err => {
-          res.status(500).send({
-              message: "Error updating FindHome with id=" + id
-          });
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update User with id=${id}. Maybe User was not found!`
+        });
+      } else res.status(200).send({ message: "User was updated successfully." });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating FindHome with id=" + id
       });
+    });
 };
 
 //--------------------- User and Admin ---------------------
@@ -372,7 +370,46 @@ exports.ResetPassword = async (req, res) => {
   }
 };
 
+exports.AgainOTP = async (req, res) => {
+  const id = req.query.id;
+  const data = await User.findById(id);
+  try {
+    const result = userSchema.validate(data);
+    //console.log(result);
+    var user = await User.findOne({
+      email: result.value.email,
+    });
+    //console.log(user);
+    let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
+    let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
+    const sendCode = await sendEmail(result.value.email, code);
+    if (sendCode.error) {
+      return res.status(500).json({
+        error: true,
+        message: "Couldn't send verification email.",
+      });
+    }
+    result.value.emailToken = code;
+    result.value.emailTokenExpires = new Date(expiry);
+    const newUser = new User(result.value);
+    await newUser.save();
+    return res.status(200).json({
+      success: true,
+      message: "Registration Success",
+    });
+  } catch (error) {
+    console.error("signup-error", error);
+    return res.status(500).json({
+      error: true,
+      message: "Cannot Register",
+    });
+  }
+}
+
 //--------------------- Admin ---------------------
+
+
+
 exports.LoginAdminPunmeaw = async (req, res) => {
   try {
     const { email, password } = req.body;

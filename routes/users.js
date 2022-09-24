@@ -26,4 +26,9 @@ router.get("/getUser", validateToken, AuthController.getUser);
 
 router.put("/editProfile", cleanBody, AuthController.EditProfile);
 
+router.put("/againOTP", cleanBody, AuthController.AgainOTP);
+
+
+
+
 module.exports = router;

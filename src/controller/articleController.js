@@ -10,7 +10,6 @@ const articleSchema = Joi.object().keys(
     }
 );
 
-//testing
 exports.CreateArticle = async (req, res) => {
     try {
         req.body.authorAdmin = new mongoose.Types.ObjectId(req.decoded.id);
@@ -29,7 +28,6 @@ exports.CreateArticle = async (req, res) => {
     }
 }
 
-//testing
 exports.AllArticle = async (req, res) => {
     const allArticle = await Article.find();
     try {
@@ -46,7 +44,6 @@ exports.AllArticle = async (req, res) => {
     }
 };
 
-//testing
 exports.DeleteArticle = (req, res) => {
     const id = req.query.id;
     Article.findByIdAndRemove(id)
