@@ -17,7 +17,6 @@ const userSchema = Joi.object().keys({
     province: Joi.string().required(),
     zipCode: Joi.string().required(),
   },
-
 });
 
 //--------------------- User ---------------------
@@ -116,21 +115,27 @@ exports.EditProfile = (req, res) => {
 };
 
 exports.IdealCat = async (req, res) => {
-    try {
-      req.body.authorAdmin = new mongoose.Types.ObjectId(req.decoded.id);
-      const result = userSchema.validate(req.body);
-      const newArticle = new Article(result.value);
-      console.log(newArticle);
-      await newArticle.save();
-
-      return res.status(200).json({
-          success: true,
-          message: "Create Success",
-      });
-  } catch (error) {
-      console.log(error);
-      return res.status(500).send(error)
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update can not be empty!"
+    });
   }
+
+  const id = req.decoded.id;
+
+  User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update User with id=${id}. Maybe User was not found!`
+        });
+      } else res.status(200).send({ message: "User was updated successfully." });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating FindHome with id=" + id
+      });
+    });
 };
 
 //--------------------- User and Admin ---------------------
@@ -425,6 +430,10 @@ exports.AgainOTPSignup = async (req, res) => {
     });
   }
 }
+
+exports.AgainOTPForgot = async (req, res) => {
+
+};
 
 //--------------------- Admin ---------------------
 exports.LoginAdminPunmeaw = async (req, res) => {
