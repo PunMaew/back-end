@@ -115,22 +115,22 @@ exports.EditProfile = (req, res) => {
     });
 };
 
-exports.IdealCat =async (req, res) => {
-//   try {
-//     req.body.authorAdmin = new mongoose.Types.ObjectId(req.decoded.id);
-//     const result = articleSchema.validate(req.body);
-//     const newArticle = new Article(result.value);
-//     console.log(newArticle);
-//     await newArticle.save();
+exports.IdealCat = async (req, res) => {
+    try {
+      req.body.authorAdmin = new mongoose.Types.ObjectId(req.decoded.id);
+      const result = userSchema.validate(req.body);
+      const newArticle = new Article(result.value);
+      console.log(newArticle);
+      await newArticle.save();
 
-//     return res.status(200).json({
-//         success: true,
-//         message: "Create Success",
-//     });
-// } catch (error) {
-//     console.log(error);
-//     return res.status(500).send(error)
-// }
+      return res.status(200).json({
+          success: true,
+          message: "Create Success",
+      });
+  } catch (error) {
+      console.log(error);
+      return res.status(500).send(error)
+  }
 };
 
 //--------------------- User and Admin ---------------------
@@ -156,8 +156,6 @@ exports.Signup = async (req, res) => {
       });
     }
     const hash = await User.hashPassword(result.value.password);
-    //const id = uuid(); //Generate unique id for the user.
-    //result.value.userId = id;
 
     //    remove the confirmPassword field from the result as we dont need to save this in the db.
     delete result.value.confirmPassword;
@@ -173,12 +171,16 @@ exports.Signup = async (req, res) => {
     }
     result.value.emailToken = code;
     result.value.emailTokenExpires = new Date(expiry);
+
+    const userEmail = result.value.email;
+    console.log(userEmail);
+
     const newUser = new User(result.value);
     await newUser.save();
-
     return res.status(200).json({
       success: true,
       message: "Registration Success",
+      _id: newUser.id
     });
   } catch (error) {
     console.error("signup-error", error);
@@ -425,7 +427,6 @@ exports.AgainOTPSignup = async (req, res) => {
 }
 
 //--------------------- Admin ---------------------
-
 exports.LoginAdminPunmeaw = async (req, res) => {
   try {
     const { email, password } = req.body;

@@ -8,6 +8,8 @@ router.post("/signup", cleanBody, AuthController.Signup);
 
 router.post("/login", cleanBody, AuthController.Login);
 
+router.post("/loginAdmin", cleanBody, AuthController.LoginAdminPunmeaw);
+
 router.get("/logout", validateToken, AuthController.Logout);
 
 router.patch("/activate", cleanBody, AuthController.Activate);

@@ -3,15 +3,14 @@ const nodemailer = require("nodemailer");
 async function sendEmail(email, code) {
   try {
     const smtpEndpoint = "smtp.sendgrid.net";
-    //const port = 465;
+    const port = 465;
     const senderAddress = "piyathida.thaneewan@mail.kmutt.ac.th";
     var toAddress = email;
     const smtpUsername = 'apikey';
     const smtpPassword = process.env.SG_APIKEY;
     var subject = "Verify your email";
     // The body of the email for recipients
-    var body_html =
-      `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    var body_html =       `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html data-editor-version="2" class="sg-campaigns" xmlns="http://www.w3.org/1999/xhtml">
         <head>
           <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -179,11 +178,11 @@ async function sendEmail(email, code) {
         </body>
       </html>`;
     let transporter = nodemailer.createTransport({
-      host: smtpEndpoint,
-      auth: {
-        user: smtpUsername,
-        pass: smtpPassword
-      }
+        host: smtpEndpoint,
+        auth: {
+            user: smtpUsername,
+            pass: smtpPassword
+        }
     });
 
     // Specify the fields in the email.
@@ -193,7 +192,7 @@ async function sendEmail(email, code) {
       subject: subject,
       html: body_html,
     };
-    //let info = await transporter.sendMail(mailOptions);
+    let info = await transporter.sendMail(mailOptions);
     return { error: false };
   } catch (error) {
     console.error("send-email-error", error);
