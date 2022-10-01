@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs/dist/bcrypt");
 const Joi = require("joi");
 const { sendEmail } = require("../helpers/mailer");
 const User = require("../model/userModel");
+const FindHome = require("../model/findHomeModel");
 const { generateJwt } = require("../helpers/generateJwt");
 const jwt = require("jsonwebtoken");
 
@@ -431,10 +432,6 @@ exports.AgainOTPSignup = async (req, res) => {
   }
 }
 
-exports.AgainOTPForgot = async (req, res) => {
-
-};
-
 //--------------------- Admin ---------------------
 exports.LoginAdminPunmeaw = async (req, res) => {
   try {
@@ -566,4 +563,52 @@ exports.getUser = async (req, res) => {
     }
   }
   return res.send(500);
+};
+
+exports.DeleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.query.id);
+    if (user) {
+
+      const findAllPostById = await FindHome.find({ author: req.query.id })
+
+      for (let index = 0; index < findAllPostById.length; index++) {
+        await FindHome.findByIdAndDelete(findAllPostById[index]._id);
+      }
+      await  User.findByIdAndDelete(req.query.id);
+      return res.status(200).json({
+        message: "Delete User " + user.firstName + " Success."
+      })
+
+    } else {
+      const error = new Error("User ID " + req.query.id + " not found");
+      error.code = 404;
+      throw error;
+    }
+  } catch (error) {
+    return res.status(error.code).json({
+      error: error.message,
+      status: error.code
+    });
+  }
+
+
+};
+
+exports.GetUserById = async (req, res) => {
+  let id = await User.findOne({
+    id: req.body.id,
+  });
+  try {
+    if (!id) {
+      return res.status(404).json({
+        error: "Email not found",
+      });
+    }
+    return res.json(id);
+  } catch (err) {
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
 };

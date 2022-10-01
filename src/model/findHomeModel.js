@@ -6,7 +6,7 @@ const findHomeSchema = new Schema({
         color: { type: String, required: true },
         breeds: { type: String, required: false, default: "-" },
         age: { type: String, required: false, default: "-" },
-        ageRange : { type: String, required: true },
+        ageRange : { type: String, required: false },
         location: {
             province: { type: String, required: true },
             subDistrict: { type: String, required: true },
@@ -34,6 +34,11 @@ const findHomeSchema = new Schema({
     {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
+    },
+    image:
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "image",
     },
     statusbar: { type: String, required: false, default: "ยังไม่ถูกรับเลี้ยง" },
 },
