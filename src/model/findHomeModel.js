@@ -35,11 +35,6 @@ const findHomeSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
     },
-    image:
-    {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "image",
-    },
     statusbar: { type: String, required: false, default: "ยังไม่ถูกรับเลี้ยง" },
 },
     {

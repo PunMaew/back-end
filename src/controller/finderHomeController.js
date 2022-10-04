@@ -2,11 +2,6 @@ const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
 const { default: mongoose } = require("mongoose");
 
-// const multer = require('multer');
-// const path = require('path');
-// var fs = require('fs');
-// var imgModel = require('./src/model/models');
-
 const findHomeSchema = Joi.object().keys(
     {
         generalInfo: {
@@ -38,39 +33,12 @@ const findHomeSchema = Joi.object().keys(
 
     })
 
-// var storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, 'uploads')
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, file.fieldname + '-' + Date.now())
-//     }
-// });
-
-// var upload = multer({ storage: storage });
-
 //--------------------- User ---------------------
 exports.Create = async/*upload.single('image'),*/ (req, res, next) => {
     try {
         req.body.author = new mongoose.Types.ObjectId(req.decoded.id);
         const result = findHomeSchema.validate(req.body);
         const newCreate = new FindHome(result.value);
-        // var obj = {
-        //     img: {
-        //         data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename)),
-        //         contentType: 'image/png'
-        //     }
-        // }
-        // imgModel.create(obj, (err, item) => {
-        //     if (err) {
-        //         console.log(err);
-        //     }
-        //     else {
-        //         // item.save();
-        //         res.redirect('/');
-        //     }
-        // });
-
         await newCreate.save();
 
         return res.status(200).json({
