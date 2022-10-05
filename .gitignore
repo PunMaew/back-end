@@ -1,3 +1,6 @@
 .env
 node_modules/
 views
+imageModel.js
+filehelper.js
+uploads

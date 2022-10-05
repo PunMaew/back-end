@@ -34,7 +34,7 @@ const findHomeSchema = Joi.object().keys(
     })
 
 //--------------------- User ---------------------
-exports.Create = async/*upload.single('image'),*/ (req, res, next) => {
+exports.Create = async (req, res, next) => {
     try {
         req.body.author = new mongoose.Types.ObjectId(req.decoded.id);
         const result = findHomeSchema.validate(req.body);

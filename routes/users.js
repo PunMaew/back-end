@@ -36,7 +36,4 @@ router.put("/idealCat", validateToken, AuthController.IdealCat);
 
 router.delete("/deleteUser", cleanBody, AuthController.DeleteUser);
 
-
-
-
 module.exports = router;
