@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs/dist/bcrypt");
 const Joi = require("joi");
 const { sendEmail } = require("../helpers/mailer");
 const User = require("../model/userModel");
+const FindHome = require("../model/findHomeModel");
 const { generateJwt } = require("../helpers/generateJwt");
 const jwt = require("jsonwebtoken");
 
@@ -15,68 +16,11 @@ const userSchema = Joi.object().keys({
   confirmPassword: Joi.string().valid(Joi.ref("password")),
   address: {
     province: Joi.string().required(),
-    // district: Joi.string().required(),
     zipCode: Joi.string().required(),
   },
-
-  //role: Joi.string().valid(Role.Admin, Role.User).required();
 });
 
-exports.Signup = async (req, res) => {
-  try {
-    const result = userSchema.validate(req.body);
-    if (result.error) {
-      console.log(result.error.message);
-      return res.json({
-        error: true,
-        status: 400,
-        message: result.error.message,
-      });
-    }
-    //Check if the email has been already registered.
-    var user = await User.findOne({
-      email: result.value.email,
-    });
-    if (user) {
-      return res.status(401).json({
-        error: true,
-        message: "Email is already in use",
-      });
-    }
-    const hash = await User.hashPassword(result.value.password);
-    //const id = uuid(); //Generate unique id for the user.
-    //result.value.userId = id;
-
-    //    remove the confirmPassword field from the result as we dont need to save this in the db.
-    delete result.value.confirmPassword;
-    result.value.password = hash;
-    let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
-    let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
-    const sendCode = await sendEmail(result.value.email, code);
-    if (sendCode.error) {
-      return res.status(500).json({
-        error: true,
-        message: "Couldn't send verification email.",
-      });
-    }
-    result.value.emailToken = code;
-    result.value.emailTokenExpires = new Date(expiry);
-    const newUser = new User(result.value);
-    await newUser.save();
-
-    return res.status(200).json({
-      success: true,
-      message: "Registration Success",
-    });
-  } catch (error) {
-    console.error("signup-error", error);
-    return res.status(500).json({
-      error: true,
-      message: "Cannot Register",
-    });
-  }
-};
-
+//--------------------- User ---------------------
 exports.Login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -147,67 +91,108 @@ exports.Login = async (req, res) => {
   }
 };
 
-exports.LoginAdminPunmeaw = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({
-        error: true,
-        message: "Cannot authorize user.",
-      });
-    }
-    //1. Find if any account with that email exists in DB
-    const user = await User.findOne({
-      email: email,
+exports.EditProfile = (req, res) => {
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update can not be empty!"
     });
-    // NOT FOUND - Throw error
-    if (!user) {
-      return res.status(404).json({
-        error: true,
-        message: "Account not found",
-      });
-    }
-    //2. Throw error if account is not activated
-    if (!user.active) {
-      return res.status(400).json({
-        error: true,
-        message: "You must verify your email to activate your account",
-      });
-    }
-    //3. Verify the password is valid
-    const isValid = await bcrypt.compare(req.body.password, user.password);
-    if (!isValid) {
-      return res.status(400).json({
-        error: true,
-        message: "Invalid Email or Password.",
-      });
-    }
+  }
 
-    //Generate Access token
-    //const { error, token } = await generateJwt(user.email, user.userId); // user._id
-    const { error, token } = await generateJwt(user.email, user._id);
-    if (error) {
+  const id = req.query.id;
+
+  User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update User with id=${id}. Maybe User was not found!`
+        });
+      } else res.status(200).send({ message: "User was updated successfully." });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating FindHome with id=" + id
+      });
+    });
+};
+
+exports.IdealCat = async (req, res) => {
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update can not be empty!"
+    });
+  }
+
+  const id = req.decoded.id;
+
+  User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update User with id=${id}. Maybe User was not found!`
+        });
+      } else res.status(200).send({ message: "User was updated successfully." });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating FindHome with id=" + id
+      });
+    });
+};
+
+//--------------------- User and Admin ---------------------
+exports.Signup = async (req, res) => {
+  try {
+    const result = userSchema.validate(req.body);
+    if (result.error) {
+      console.log(result.error.message);
+      return res.json({
+        error: true,
+        status: 400,
+        message: result.error.message,
+      });
+    }
+    //Check if the email has been already registered.
+    var user = await User.findOne({
+      email: result.value.email,
+    });
+    if (user) {
+      return res.status(401).json({
+        error: true,
+        message: "Email is already in use",
+      });
+    }
+    const hash = await User.hashPassword(result.value.password);
+
+    //    remove the confirmPassword field from the result as we dont need to save this in the db.
+    delete result.value.confirmPassword;
+    result.value.password = hash;
+    let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
+    let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
+    const sendCode = await sendEmail(result.value.email, code);
+    if (sendCode.error) {
       return res.status(500).json({
         error: true,
-        message: "Couldn't create access token. Please try again later",
+        message: "Couldn't send verification email.",
       });
     }
+    result.value.emailToken = code;
+    result.value.emailTokenExpires = new Date(expiry);
 
-    user.accessToken = token;
+    const userEmail = result.value.email;
+    console.log(userEmail);
 
-    await user.save();
-
-    //Success
-    return res.send({
+    const newUser = new User(result.value);
+    await newUser.save();
+    return res.status(200).json({
       success: true,
-      message: "User logged in successfully",
-      accessToken: token, //Send it to the client
+      message: "Registration Success",
+      _id: newUser.id
     });
-  } catch (err) {
-    console.error("Login error", err);
+  } catch (error) {
+    console.error("signup-error", error);
     return res.status(500).json({
       error: true,
-      message: "Couldn't login. Please try again later.",
+      message: "Cannot Register",
     });
   }
 };
@@ -411,6 +396,108 @@ exports.ResetPassword = async (req, res) => {
   }
 };
 
+exports.AgainOTPSignup = async (req, res) => {
+  const id = req.query.id;
+  const data = await User.findById(id);
+  try {
+    const result = userSchema.validate(data);
+    //console.log(result);
+    var user = await User.findOne({
+      email: result.value.email,
+    });
+    //console.log(user);
+    let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
+    let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
+    const sendCode = await sendEmail(result.value.email, code);
+    if (sendCode.error) {
+      return res.status(500).json({
+        error: true,
+        message: "Couldn't send verification email.",
+      });
+    }
+    result.value.emailToken = code;
+    result.value.emailTokenExpires = new Date(expiry);
+    const newUser = new User(result.value);
+    await newUser.save();
+    return res.status(200).json({
+      success: true,
+      message: "Registration Success",
+    });
+  } catch (error) {
+    console.error("signup-error", error);
+    return res.status(500).json({
+      error: true,
+      message: "Cannot Register",
+    });
+  }
+}
+
+//--------------------- Admin ---------------------
+exports.LoginAdminPunmeaw = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        error: true,
+        message: "Cannot authorize user.",
+      });
+    }
+    //1. Find if any account with that email exists in DB
+    const user = await User.findOne({
+      email: email,
+    });
+    // NOT FOUND - Throw error
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        message: "Account not found",
+      });
+    }
+    //2. Throw error if account is not activated
+    if (!user.active) {
+      return res.status(400).json({
+        error: true,
+        message: "You must verify your email to activate your account",
+      });
+    }
+    //3. Verify the password is valid
+    const isValid = await bcrypt.compare(req.body.password, user.password);
+    if (!isValid) {
+      return res.status(400).json({
+        error: true,
+        message: "Invalid Email or Password.",
+      });
+    }
+
+    //Generate Access token
+    //const { error, token } = await generateJwt(user.email, user.userId); // user._id
+    const { error, token } = await generateJwt(user.email, user._id);
+    if (error) {
+      return res.status(500).json({
+        error: true,
+        message: "Couldn't create access token. Please try again later",
+      });
+    }
+
+    user.accessToken = token;
+
+    await user.save();
+
+    //Success
+    return res.send({
+      success: true,
+      message: "User logged in successfully",
+      accessToken: token, //Send it to the client
+    });
+  } catch (err) {
+    console.error("Login error", err);
+    return res.status(500).json({
+      error: true,
+      message: "Couldn't login. Please try again later.",
+    });
+  }
+};
+
 exports.GetAllUsers = async (req, res) => {
   let users = await User.find();
   try {
@@ -478,26 +565,50 @@ exports.getUser = async (req, res) => {
   return res.send(500);
 };
 
-exports.EditProfile = (req, res) => {
-  if (!req.body) {
-      return res.status(400).send({
-          message: "Data to update can not be empty!"
-      });
+exports.DeleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.query.id);
+    if (user) {
+
+      const findAllPostById = await FindHome.find({ author: req.query.id })
+
+      for (let index = 0; index < findAllPostById.length; index++) {
+        await FindHome.findByIdAndDelete(findAllPostById[index]._id);
+      }
+      await  User.findByIdAndDelete(req.query.id);
+      return res.status(200).json({
+        message: "Delete User " + user.firstName + " Success."
+      })
+
+    } else {
+      const error = new Error("User ID " + req.query.id + " not found");
+      error.code = 404;
+      throw error;
+    }
+  } catch (error) {
+    return res.status(error.code).json({
+      error: error.message,
+      status: error.code
+    });
   }
 
-  const id = req.query.id;
 
-  User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-      .then(data => {
-          if (!data) {
-              res.status(404).send({
-                  message: `Cannot update User with id=${id}. Maybe User was not found!`
-              });
-          } else res.status(200).send({ message: "User was updated successfully." });
-      })
-      .catch(err => {
-          res.status(500).send({
-              message: "Error updating FindHome with id=" + id
-          });
+};
+
+exports.GetUserById = async (req, res) => {
+  let id = await User.findOne({
+    id: req.body.id,
+  });
+  try {
+    if (!id) {
+      return res.status(404).json({
+        error: "Email not found",
       });
+    }
+    return res.json(id);
+  } catch (err) {
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
 };

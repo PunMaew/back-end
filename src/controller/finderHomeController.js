@@ -33,7 +33,8 @@ const findHomeSchema = Joi.object().keys(
 
     })
 
-exports.Create = async (req, res) => {
+//--------------------- User ---------------------
+exports.Create = async (req, res, next) => {
     try {
         req.body.author = new mongoose.Types.ObjectId(req.decoded.id);
         const result = findHomeSchema.validate(req.body);
@@ -51,6 +52,13 @@ exports.Create = async (req, res) => {
 
 };
 
+exports.GetMyPost = async (req, res) => {
+    const id = req.query.id;
+    const mypost = await FindHome.find({ author: id });
+    return res.send({ mypost });
+};
+
+//--------------------- User and Admin ---------------------
 exports.FindAllPost = async (req, res) => {
     const getAllPost = await FindHome.find();
     try {
@@ -71,10 +79,10 @@ exports.FindOnePost = async (req, res) => {
     try {
         const id = req.query.id;
         const data = await FindHome.findById(id).populate('author').exec();
-        if (!data) 
-        return res.status(404).send({
-            message: "Not found Post with id " + id
-        });
+        if (!data)
+            return res.status(404).send({
+                message: "Not found Post with id " + id
+            });
         return res.send({
             data: data,
         });
@@ -83,53 +91,101 @@ exports.FindOnePost = async (req, res) => {
     }
 };
 
-exports.DeletePost = (req, res) => {
-    const id = req.query.id;
-    FindHome.findByIdAndRemove(id)
-        .then(data => {
-            if (!data) {
-                res.status(404).send({
-                    message: `Cannot delete FindHome with id=${id}. Maybe FindHome was not found!`
-                });
-            } else {
-                res.send({
-                    message: "FindHome was deleted successfully!"
-                });
-            }
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Could not delete FindHome with id=" + id
+exports.DeletePost = async (req, res) => {
+    try {
+        const id = req.query.id;
+        const data = await FindHome.findByIdAndRemove(id)
+        if (!data) {
+            return res.status(404).send({
+                message: `Cannot delete FindHome with id=${id}. Maybe FindHome was not found!`
             });
+        }
+        return res.status(200).send({ message: "FindHome was deleted successfully!" });
+    } catch (err) {
+        res.status(500).send({
+            message: "Could not delete FindHome with id=" + id
         });
+
+    }
+
+    // const id = req.query.id;
+    // FindHome.findByIdAndRemove(id)
+    //     .then(data => {
+    //         if (!data) {
+    //             res.status(404).send({
+    //                 message: `Cannot delete FindHome with id=${id}. Maybe FindHome was not found!`
+    //             });
+    //         } else {
+    //             res.send({
+    //                 message: "FindHome was deleted successfully!"
+    //             });
+    //         }
+    //     })
+    //     .catch(err => {
+    //         res.status(500).send({
+    //             message: "Could not delete FindHome with id=" + id
+    //         });
+    //     });
 };
 
 exports.Update = (req, res) => {
-    if (!req.body) {
-        return res.status(400).send({
-            message: "Data to update can not be empty!"
+    try {
+        if (!req.body) {
+            return res.status(400).send({
+                message: "Data to update can not be empty!"
+            });
+        }
+
+        const id = req.query.id;
+
+        FindHome.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+        if (!data) {
+            return res.status(404).send({
+                message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
+            });
+        } return res.status(200).send({ message: "FindHome was updated successfully." });
+    } catch (error) {
+        res.status(500).send({
+            message: "Error updating FindHome with id=" + id
         });
     }
+    // if (!req.body) {
+    //     return res.status(400).send({
+    //         message: "Data to update can not be empty!"
+    //     });
+    // }
 
-    const id = req.query.id;
+    // const id = req.query.id;
 
-    FindHome.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-        .then(data => {
-            if (!data) {
-                res.status(404).send({
-                    message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
-                });
-            } else res.status(200).send({ message: "FindHome was updated successfully." });
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error updating FindHome with id=" + id
-            });
+    // FindHome.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+    //     .then(data => {
+    //         if (!data) {
+    //             res.status(404).send({
+    //                 message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
+    //             });
+    //         } else res.status(200).send({ message: "FindHome was updated successfully." });
+    //     })
+    //     .catch(err => {
+    //         res.status(500).send({
+    //             message: "Error updating FindHome with id=" + id
+    //         });
+    //     });
+};
+
+exports.GetMultipleRandom = async (req, res) => {
+    const getAllPost = await FindHome.find();
+    if (!getAllPost || getAllPost.length === 0) {
+        return res.status(201).send({
+            message: "No Post Now"
         });
-};
+    }
+    function getMultipleRandom(arr, num) {
+        const shuffled = [...arr].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, num);
+    }
+    const randomPost = getMultipleRandom(getAllPost, 3)
+    return res.status(200).json(randomPost);
+}
 
-exports.GetMyPost = async (req, res) => {
-    const id = req.query.id;
-    const mypost = await FindHome.find({author: id});
-    return res.send({mypost});
-};
+
+
