@@ -19,7 +19,6 @@ const articleSchema = new Schema({
     }
 )
 
-
 mongoose.pluralize(null);
 const Article = mongoose.model('article', articleSchema);
 module.exports = Article;

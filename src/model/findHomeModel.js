@@ -18,11 +18,6 @@ const findHomeSchema = new Schema({
         disease: { type: String, required: false, default: "-" },
         neutered: { type: String, required: true },
         image: { type: String, required: false },
-        // img:
-        // {
-        //     data: Buffer,
-        //     contentType: String
-        // },
         gender: { type: String, required: true },
         characteristic: { type: Array, required: true },
         others: { type: String, required: false, default: "-" },
