@@ -3,6 +3,7 @@ const router = express.Router();
 const cleanBody = require("../middlewares/cleanbody");
 const { validateToken } = require("../middlewares/validateToken");
 const AuthController = require("../src/controller/userController");
+
 //Define endpoints
 router.post("/signup", cleanBody, AuthController.Signup);
 

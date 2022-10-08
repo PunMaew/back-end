@@ -4,8 +4,11 @@ const cleanBody = require("../middlewares/cleanbody");
 const { validateToken } = require ("../middlewares/validateToken");
 const ArticleController = require("../src/controller/articleController");
 
+//Define endpoints
 router.post("/createArticle", validateToken, ArticleController.CreateArticle);
+
 router.get("/allArticle", cleanBody, ArticleController.AllArticle);
+
 router.delete("/delArticle", cleanBody, ArticleController.DeleteArticle);
 
 module.exports = router;

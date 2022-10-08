@@ -4,9 +4,10 @@ const cleanBody = require("../middlewares/cleanbody");
 const { validateToken } = require("../middlewares/validateToken");
 const FindHomeController = require("../src/controller/finderHomeController");
 
+//Define endpoints
 router.post("/create", validateToken, FindHomeController.Create);
 
-router.get("/allpost", cleanBody, FindHomeController.FindAllPost);
+router.get("/allPost", cleanBody, FindHomeController.FindAllPost);
 
 router.get("/onePost", cleanBody, FindHomeController.FindOnePost);
 
@@ -16,6 +17,6 @@ router.put("/updatePost", cleanBody, FindHomeController.Update);
 
 router.get("/getMyPost", cleanBody, FindHomeController.GetMyPost);
 
-router.get("/RandomPost", cleanBody, FindHomeController.GetMultipleRandom);
+router.get("/randomPost", cleanBody, FindHomeController.GetMultipleRandom);
 
 module.exports = router;
