@@ -107,7 +107,6 @@ exports.DeletePost = async (req, res) => {
         });
 
     }
-
     // const id = req.query.id;
     // FindHome.findByIdAndRemove(id)
     //     .then(data => {
@@ -128,8 +127,9 @@ exports.DeletePost = async (req, res) => {
     //     });
 };
 
-exports.Update = (req, res) => {
+exports.Update = async (req, res) => {
     try {
+        
         if (!req.body) {
             return res.status(400).send({
                 message: "Data to update can not be empty!"
@@ -137,8 +137,7 @@ exports.Update = (req, res) => {
         }
 
         const id = req.query.id;
-
-        FindHome.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+        const data = await FindHome.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
         if (!data) {
             return res.status(404).send({
                 message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
@@ -149,27 +148,7 @@ exports.Update = (req, res) => {
             message: "Error updating FindHome with id=" + id
         });
     }
-    // if (!req.body) {
-    //     return res.status(400).send({
-    //         message: "Data to update can not be empty!"
-    //     });
-    // }
-
-    // const id = req.query.id;
-
-    // FindHome.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-    //     .then(data => {
-    //         if (!data) {
-    //             res.status(404).send({
-    //                 message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
-    //             });
-    //         } else res.status(200).send({ message: "FindHome was updated successfully." });
-    //     })
-    //     .catch(err => {
-    //         res.status(500).send({
-    //             message: "Error updating FindHome with id=" + id
-    //         });
-    //     });
+    
 };
 
 exports.GetMultipleRandom = async (req, res) => {
