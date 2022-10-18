@@ -1,6 +1,19 @@
 const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
+const ImgModel = require("../model/imgModel");
 const { default: mongoose } = require("mongoose");
+
+
+const fileSizeFormatter = (bytes, decimal) => {
+    if(bytes === 0){
+        return '0 Bytes';
+    }
+    const dm = decimal || 2;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'YB', 'ZB'];
+    const index = Math.floor(Math.log(bytes) / Math.log(1000));
+    return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + ' ' + sizes[index];
+
+}
 
 const findHomeSchema = Joi.object().keys(
     {
@@ -129,7 +142,7 @@ exports.DeletePost = async (req, res) => {
 
 exports.Update = async (req, res) => {
     try {
-        
+
         if (!req.body) {
             return res.status(400).send({
                 message: "Data to update can not be empty!"
@@ -148,7 +161,7 @@ exports.Update = async (req, res) => {
             message: "Error updating FindHome with id=" + id
         });
     }
-    
+
 };
 
 exports.GetMultipleRandom = async (req, res) => {
@@ -165,6 +178,31 @@ exports.GetMultipleRandom = async (req, res) => {
     const randomPost = getMultipleRandom(getAllPost, 3)
     return res.status(200).json(randomPost);
 }
+
+exports.Singleupload = async (req, res) => {
+    try {
+        const file = new ImgModel({
+            fileName: req.file.originalname,
+            filePath: req.file.path,
+            fileType: req.file.mimetype,
+            fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
+        });
+        await file.save();
+        res.status(201).send('File Uploaded Successfully');
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
+exports.getallSingleFiles = async (req, res, next) => {
+    try{
+        const files = await ImgModel.find();
+        res.status(200).send(files);
+    }catch(error) {
+        res.status(400).send(error.message);
+    }
+}
+
 
 
 
