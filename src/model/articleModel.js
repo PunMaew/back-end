@@ -3,11 +3,24 @@ const Schema = mongoose.Schema;
 const articleSchema = new Schema({
     title: { type: String, required: true },
     details: { type: String, required: true },
-    imageArt: { type: String, required: false },
     authorAdmin:
     {
         type: mongoose.Schema.Types.ObjectId,
         ref: "user",
+    },
+    image: {
+        fileName: {
+            type: String, required: false
+        },
+        filePath: {
+            type: String, required: false
+        },
+        fileType: {
+            type: String, required: false
+        },
+        fileSize: {
+            type: String, required: false
+        }
     },
 
 },

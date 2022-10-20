@@ -1,18 +1,14 @@
 const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
-const ImgModel = require("../model/imgModel");
 const { default: mongoose } = require("mongoose");
-
+const fs = require('fs/promises')
 
 const fileSizeFormatter = (bytes, decimal) => {
-    if(bytes === 0){
-        return '0 Bytes';
-    }
+    if (bytes === 0) { return '0 Bytes'; }
     const dm = decimal || 2;
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'YB', 'ZB'];
     const index = Math.floor(Math.log(bytes) / Math.log(1000));
     return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + ' ' + sizes[index];
-
 }
 
 const findHomeSchema = Joi.object().keys(
@@ -49,6 +45,7 @@ const findHomeSchema = Joi.object().keys(
 //--------------------- User ---------------------
 exports.Create = async (req, res, next) => {
     try {
+        console.log(req.body);
         req.body.author = new mongoose.Types.ObjectId(req.decoded.id);
         const result = findHomeSchema.validate(req.body);
         const newCreate = new FindHome(result.value);
@@ -57,6 +54,7 @@ exports.Create = async (req, res, next) => {
         return res.status(200).json({
             success: true,
             message: "Create Success",
+            postId: newCreate._id.toString(),
         });
     } catch (error) {
         console.log(error);
@@ -107,38 +105,29 @@ exports.FindOnePost = async (req, res) => {
 exports.DeletePost = async (req, res) => {
     try {
         const id = req.query.id;
+        console.log(id);
+
+        const post = await FindHome.findById(id)
+        console.log(post);
+
+        await fs.unlink(`./uploads/${post.image.fileName}`)
+
         const data = await FindHome.findByIdAndRemove(id)
         if (!data) {
             return res.status(404).send({
                 message: `Cannot delete FindHome with id=${id}. Maybe FindHome was not found!`
             });
         }
-        return res.status(200).send({ message: "FindHome was deleted successfully!" });
+        return res.status(200).send({
+            message: "FindHome was deleted successfully!"
+        });
     } catch (err) {
         res.status(500).send({
-            message: "Could not delete FindHome with id=" + id
+            message: "Could not delete FindHome "
         });
-
     }
-    // const id = req.query.id;
-    // FindHome.findByIdAndRemove(id)
-    //     .then(data => {
-    //         if (!data) {
-    //             res.status(404).send({
-    //                 message: `Cannot delete FindHome with id=${id}. Maybe FindHome was not found!`
-    //             });
-    //         } else {
-    //             res.send({
-    //                 message: "FindHome was deleted successfully!"
-    //             });
-    //         }
-    //     })
-    //     .catch(err => {
-    //         res.status(500).send({
-    //             message: "Could not delete FindHome with id=" + id
-    //         });
-    //     });
 };
+
 
 exports.Update = async (req, res) => {
     try {
@@ -181,24 +170,33 @@ exports.GetMultipleRandom = async (req, res) => {
 
 exports.Singleupload = async (req, res) => {
     try {
-        const file = new ImgModel({
-            fileName: req.file.originalname,
-            filePath: req.file.path,
-            fileType: req.file.mimetype,
-            fileSize: fileSizeFormatter(req.file.size, 2) // 0.00
+        if (!req.params.postId) {
+            throw new Error('require field')
+        }
+        await FindHome.findByIdAndUpdate(req.params.postId, {
+
+
+            image: {
+                fileName: req.file.originalname,
+                filePath: req.file.path,
+                fileType: req.file.mimetype,
+                fileSize: fileSizeFormatter(req.file.size, 2)
+            }
+        })
+        res.status(201).send({
+            message: 'File Uploaded Successfully',
+            image: req.file.originalname
         });
-        await file.save();
-        res.status(201).send('File Uploaded Successfully');
     } catch (error) {
         res.status(400).send(error.message);
     }
 };
 
 exports.getallSingleFiles = async (req, res, next) => {
-    try{
-        const files = await ImgModel.find();
+    try {
+        const files = await FindHome.find();
         res.status(200).send(files);
-    }catch(error) {
+    } catch (error) {
         res.status(400).send(error.message);
     }
 }
