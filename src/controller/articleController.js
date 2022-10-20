@@ -98,28 +98,27 @@ exports.DeleteArticle = async (req, res) => {
     //     });
 };
 
-exports.UpdateArticle = (req, res) => {
-    if (!req.body) {
-        return res.status(400).send({
-            message: "Data to update can not be empty!"
+exports.UpdateArticle = async (req, res) => {
+    try {
+
+        if (!req.body) {
+            return res.status(400).send({
+                message: "Data to update can not be empty!"
+            });
+        }
+
+        const id = req.query.id;
+        const data = await Article.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+        if (!data) {
+            return res.status(404).send({
+                message: `Cannot update Article with id=${id}. Maybe Article was not found!`
+            });
+        } return res.status(200).send({ message: "Article was updated successfully." });
+    } catch (error) {
+        res.status(500).send({
+            message: "Error updating Article with id=" + id
         });
     }
-
-    const id = req.query.id;
-
-    Article.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
-        .then(data => {
-            if (!data) {
-                res.status(404).send({
-                    message: `Cannot update Article with id=${id}. Maybe Article was not found!`
-                });
-            } else res.status(200).send({ message: "Article was updated successfully." });
-        })
-        .catch(err => {
-            res.status(500).send({
-                message: "Error updating Article with id=" + id
-            });
-        });
 };
 
 exports.SingleuploadArticle = async (req, res) => {

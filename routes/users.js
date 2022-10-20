@@ -33,7 +33,7 @@ router.put("/editProfile", cleanBody, AuthController.EditProfile);
 
 router.put("/againOTP", cleanBody, AuthController.AgainOTPSignup);
 
-router.put("/idealCat", validateToken, AuthController.IdealCat);
+router.put("/idealCat", validateToken, AuthController.IdealCat); //*เพิ่มแมวที่ชอบ
 
 router.delete("/deleteUser", cleanBody, AuthController.DeleteUser);
 

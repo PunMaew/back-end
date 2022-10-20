@@ -14,5 +14,7 @@ router.delete("/delArticle", cleanBody, ArticleController.DeleteArticle);
 
 router.post("/uploadArticle/:postId", upload.single('image') , ArticleController.SingleuploadArticle);
 
+router.put("/updateArticle", cleanBody, ArticleController.UpdateArticle);
+
 
 module.exports = router;
