@@ -259,14 +259,7 @@ exports.Singleupload = async (req, res) => {
     }
 };
 
-exports.getallSingleFiles = async (req, res, next) => {
-    try {
-        const files = await FindHome.find();
-        res.status(200).send(files);
-    } catch (error) {
-        res.status(400).send(error.message);
-    }
-}
+
 
 
 
