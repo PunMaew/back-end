@@ -62,7 +62,7 @@ exports.SingleuploadArticle = async (req, res) => {
 
 exports.AllArticle = async (req, res) => {
     const allArticle = await Article.find().populate({
-        path:'authorAdminInfo', select: ['firstName', 'lastName']
+        path: 'authorAdminInfo', select: ['firstName', 'lastName']
     }).exec();
     try {
         if (allArticle.length < 1) {
@@ -121,7 +121,8 @@ exports.UpdateArticle = async (req, res) => {
 
         if (!data) {
             return res.status(404).send({
-                message: `Cannot update Article with id=${id}. Maybe Article was not found!`});
+                message: `Cannot update Article with id=${id}. Maybe Article was not found!`
+            });
         }
 
         return res.status(200).send({
@@ -142,37 +143,55 @@ exports.updateImageArticle = async (req, res) => {
         console.log(id);
         const post = await Article.findById(id)
 
-        if(!post.image.fileName){
+        if (!post.image.fileName) {
             return res.status(404).send({
-                message: `Article was not found!`});
+                message: `Article was not found!`
+            });
         }
 
         const nameImage = post.image.filePath.substr(8);
         console.log(nameImage);
 
-        fs.unlink(`./uploads/${nameImage}`) 
+        fs.unlink(`./uploads/${nameImage}`)
         post.image = undefined
         await post.save()
 
-        const data = await Article.findByIdAndUpdate(id, 
+        const data = await Article.findByIdAndUpdate(id,
             {
-            image: {
-                fileName: req.file.originalname,
-                filePath: req.file.path,
-                fileType: req.file.mimetype,
-                fileSize: fileSizeFormatter(req.file.size, 2)
-            }
-        })
+                image: {
+                    fileName: req.file.originalname,
+                    filePath: req.file.path,
+                    fileType: req.file.mimetype,
+                    fileSize: fileSizeFormatter(req.file.size, 2)
+                }
+            })
 
         if (!data) {
             return res.status(404).send({
-                message: `Cannot update Article. Maybe Article was not found!`});
+                message: `Cannot update Article. Maybe Article was not found!`
+            });
         }
 
         res.status(201).send({
             message: 'File Uploaded Successfully',
             image: req.file.originalname
         });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
+exports.readFile = async (req, res) => {
+    try {
+        const id = req.query.id;
+        const post = await Article.findById(id)
+        const nameImage = post.image.filePath.substr(8);
+        console.log(nameImage);
+
+        const data = await  fs.readFile(`./uploads/${nameImage}`);
+        return res.end(data);
+        
+
     } catch (error) {
         res.status(400).send(error.message);
     }

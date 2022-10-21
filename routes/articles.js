@@ -10,6 +10,8 @@ router.post("/createArticle", validateToken, ArticleController.CreateArticle);
 
 router.get("/allArticle", cleanBody, ArticleController.AllArticle);
 
+router.get("/readFile", cleanBody, ArticleController.readFile);
+
 router.delete("/delArticle", cleanBody, ArticleController.DeleteArticle);
 
 router.post("/uploadArticle/:postId", upload.single('image') , ArticleController.SingleuploadArticle);
