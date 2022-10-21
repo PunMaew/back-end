@@ -27,6 +27,7 @@ const userSchema = new Schema(
       createdAt: "createdAt",
       updatedAt: "updatedAt",
     },
+    versionKey: false
   }
 );
 

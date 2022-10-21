@@ -95,6 +95,24 @@ exports.FindAllPost = async (req, res) => {
             });
         }
 
+        return res.json(getAllPost);
+    } catch (err) {
+        return res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+};
+
+exports.FindAllLatest = async (req, res) => {
+    const getAllPost = await FindHome.find().sort({createdAt:-1}).populate({
+        path:'authorInfo', select: ['firstName', 'lastName']
+    }).exec();
+    try {
+        if (getAllPost.length < 1) {
+            return res.status(404).json({
+                error: "No post was found in DB"
+            });
+        }
 
         return res.json(getAllPost);
     } catch (err) {
@@ -242,7 +260,6 @@ exports.Singleupload = async (req, res) => {
         }
         await FindHome.findByIdAndUpdate(req.params.postId, {
 
-
             image: {
                 fileName: req.file.originalname,
                 filePath: req.file.path,
@@ -272,6 +289,8 @@ exports.readFileFindHome = async (req, res) => {
         res.status(400).send(error.message);
     }
 };
+
+
 
 
 

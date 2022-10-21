@@ -14,6 +14,8 @@ router.post("/updateImage", upload.single('image') , FindHomeController.updateIm
 
 router.get("/allPost", cleanBody, FindHomeController.FindAllPost);
 
+router.get("/latestPost", cleanBody, FindHomeController.FindAllLatest);
+
 router.get("/onePost", cleanBody, FindHomeController.FindOnePost);
 
 router.get("/readFileIdFindHome", cleanBody, FindHomeController.readFileFindHome);
