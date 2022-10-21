@@ -5,7 +5,7 @@ const articleSchema = new Schema({
     details: { type: String, required: true },
     authorAdmin:
     {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Types.ObjectId,
         ref: "user",
     },
     image: {
@@ -29,8 +29,17 @@ const articleSchema = new Schema({
             createdAt: "createdAt",
             updatedAt: "updatedAt",
         },
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
     }
-)
+);
+
+articleSchema.virtual('authorAdminInfo', {
+    ref: "user", //data
+    localField: 'authorAdmin',
+    foreignField: '_id',
+    justOne: true
+})
 
 mongoose.pluralize(null);
 const Article = mongoose.model('article', articleSchema);

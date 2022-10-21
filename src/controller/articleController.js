@@ -61,7 +61,9 @@ exports.SingleuploadArticle = async (req, res) => {
 };
 
 exports.AllArticle = async (req, res) => {
-    const allArticle = await Article.find();
+    const allArticle = await Article.find().populate({
+        path:'authorAdminInfo', select: ['firstName', 'lastName']
+    }).exec();
     try {
         if (allArticle.length < 1) {
             return res.status(404).json({
