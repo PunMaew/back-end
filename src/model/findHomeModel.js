@@ -27,7 +27,7 @@ const findHomeSchema = new Schema({
         facebook: { type: String, required: false, default: "-" },
         line: { type: String, default: "-", required: false, },
     },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: "user", },
+    author: { type: mongoose.Types.ObjectId, ref: "user", required: true },
     statusbar: { type: String, required: false, default: "ยังไม่ถูกรับเลี้ยง" },
     image: {
         fileName: {
@@ -49,8 +49,18 @@ const findHomeSchema = new Schema({
             createdAt: "createdAt",
             updatedAt: "updatedAt",
         },
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
     }
 );
+
+findHomeSchema.virtual('authorInfo', {
+    ref: "user", //data
+    localField: 'author',
+    foreignField: '_id',
+    justOne: true
+})
+
 
 mongoose.pluralize(null);
 const FindHome = mongoose.model("finderHome", findHomeSchema);

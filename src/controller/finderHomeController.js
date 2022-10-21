@@ -1,7 +1,9 @@
 const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
+const User = require("../model/userModel");
 const { default: mongoose } = require("mongoose");
-const fs = require('fs/promises')
+const fs = require('fs/promises');
+const { Console } = require("console");
 
 const fileSizeFormatter = (bytes, decimal) => {
     if (bytes === 0) { return '0 Bytes'; }
@@ -45,17 +47,29 @@ const findHomeSchema = Joi.object().keys(
 //--------------------- User ---------------------
 exports.Create = async (req, res, next) => {
     try {
-        console.log(req.body);
-        req.body.author = new mongoose.Types.ObjectId(req.decoded.id);
-        const result = findHomeSchema.validate(req.body);
-        const newCreate = new FindHome(result.value);
-        await newCreate.save();
 
-        return res.status(200).json({
-            success: true,
-            message: "Create Success",
-            postId: newCreate._id.toString(),
-        });
+        const idUser = req.decoded.id;
+        const user = await User.findById(idUser);
+
+        if (user) {
+            req.body.author = idUser;
+            const result = findHomeSchema.validate(req.body);
+            const newCreate = new FindHome(result.value);
+            await newCreate.save();
+
+            const newPost = await FindHome.create(newCreate)
+            return res.status(200).json({
+                success: true,
+                message: "Create Success",
+                postId: newPost._id.toString(),
+            });
+        } else {
+            return res.status(500).json({
+                success: false,
+                message: "No user found",
+            });
+        }
+
     } catch (error) {
         console.log(error);
         return res.status(500).send(error)
@@ -71,13 +85,17 @@ exports.GetMyPost = async (req, res) => {
 
 //--------------------- User and Admin ---------------------
 exports.FindAllPost = async (req, res) => {
-    const getAllPost = await FindHome.find();
+    const getAllPost = await FindHome.find().populate({
+        path:'authorInfo', select: ['firstName', 'lastName']
+    }).exec();
     try {
         if (getAllPost.length < 1) {
             return res.status(404).json({
                 error: "No post was found in DB"
             });
         }
+
+
         return res.json(getAllPost);
     } catch (err) {
         return res.status(500).json({
@@ -128,7 +146,6 @@ exports.DeletePost = async (req, res) => {
     }
 };
 
-
 exports.Update = async (req, res) => {
     try {
 
@@ -144,13 +161,57 @@ exports.Update = async (req, res) => {
             return res.status(404).send({
                 message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
             });
-        } return res.status(200).send({ message: "FindHome was updated successfully." });
+        } return res.status(200).send({
+            message: "FindHome was updated successfully.",
+            postId: data._id.toString()
+        });
     } catch (error) {
         res.status(500).send({
             message: "Error updating FindHome with id=" + id
         });
     }
 
+};
+
+exports.updateImageFindHome = async (req, res) => {
+    try {
+        const id = req.query.id;
+        console.log(id);
+        const post = await FindHome.findById(id)
+
+        if (!post.image.fileName) {
+            return res.status(404).send({
+                message: `FindHome was not found!`
+            });
+        }
+
+        fs.unlink(`./uploads/${post.image.fileName}`)
+        post.image = undefined
+        await post.save()
+
+        const data = await FindHome.findByIdAndUpdate(id,
+            {
+                image: {
+                    fileName: req.file.originalname,
+                    filePath: req.file.path,
+                    fileType: req.file.mimetype,
+                    fileSize: fileSizeFormatter(req.file.size, 2)
+                }
+            })
+
+        if (!data) {
+            return res.status(404).send({
+                message: `Cannot update FindHome. Maybe FindHome was not found!`
+            });
+        }
+
+        res.status(201).send({
+            message: 'File Uploaded Successfully',
+            image: req.file.originalname
+        });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
 };
 
 exports.GetMultipleRandom = async (req, res) => {
