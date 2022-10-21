@@ -78,6 +78,23 @@ exports.AllArticle = async (req, res) => {
     }
 };
 
+exports.FindOneArticle = async (req, res) => {
+    const id = req.query.id;
+    try {
+        const data = await Article.findById(id).populate('authorAdmin').exec();
+        if (!data)
+            return res.status(404).send({
+                message: "Not found Post with id " + id
+            });
+        return res.send({
+            data: data,
+        });
+    } catch (err) {
+        //res.status(500).send({ message: "Error retrieving Post with id=" + id });
+    console.log(err);
+    }
+};
+
 exports.DeleteArticle = async (req, res) => {
     try {
         const id = req.query.id;
@@ -187,12 +204,12 @@ exports.readFile = async (req, res) => {
         const post = await Article.findById(id)
         const nameImage = post.image.filePath.substr(8);
         console.log(nameImage);
-
-        const data = await  fs.readFile(`./uploads/${nameImage}`);
+        const data = await fs.readFile(`./uploads/${nameImage}`);
         return res.end(data);
-        
 
     } catch (error) {
         res.status(400).send(error.message);
     }
 };
+
+

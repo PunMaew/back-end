@@ -16,7 +16,7 @@ router.get("/allPost", cleanBody, FindHomeController.FindAllPost);
 
 router.get("/onePost", cleanBody, FindHomeController.FindOnePost);
 
-
+router.get("/readFileIdFindHome", cleanBody, FindHomeController.readFileFindHome);
 
 router.delete("/deletePost", cleanBody, FindHomeController.DeletePost);
 

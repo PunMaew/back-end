@@ -105,8 +105,8 @@ exports.FindAllPost = async (req, res) => {
 };
 
 exports.FindOnePost = async (req, res) => {
+    const id = req.query.id;
     try {
-        const id = req.query.id;
         const data = await FindHome.findById(id).populate('author').exec();
         if (!data)
             return res.status(404).send({
@@ -258,6 +258,21 @@ exports.Singleupload = async (req, res) => {
         res.status(400).send(error.message);
     }
 };
+
+exports.readFileFindHome = async (req, res) => {
+    try {
+        const id = req.query.id;
+        const post = await FindHome.findById(id)
+        const nameImage = post.image.filePath.substr(8);
+        console.log(nameImage);
+        const data = await fs.readFile(`./uploads/${nameImage}`);
+        return res.end(data);
+
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
 
 
 

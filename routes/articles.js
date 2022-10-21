@@ -10,7 +10,9 @@ router.post("/createArticle", validateToken, ArticleController.CreateArticle);
 
 router.get("/allArticle", cleanBody, ArticleController.AllArticle);
 
-router.get("/readFile", cleanBody, ArticleController.readFile);
+router.get("/oneArticle", cleanBody, ArticleController.FindOneArticle);
+
+router.get("/readFileId", cleanBody, ArticleController.readFile);
 
 router.delete("/delArticle", cleanBody, ArticleController.DeleteArticle);
 
@@ -19,6 +21,5 @@ router.post("/uploadArticle/:postId", upload.single('image') , ArticleController
 router.post("/updateImageArticle", upload.single('image') , ArticleController.updateImageArticle);
 
 router.put("/updateArticle", cleanBody, ArticleController.UpdateArticle);
-
 
 module.exports = router;
