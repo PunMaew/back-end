@@ -38,6 +38,28 @@ exports.CreateArticle = async (req, res) => {
     }
 }
 
+exports.SingleuploadArticle = async (req, res) => {
+    try {
+        if (!req.params.postId) {
+            throw new Error('require field')
+        }
+        await Article.findByIdAndUpdate(req.params.postId, {
+            image: {
+                fileName: req.file.originalname,
+                filePath: req.file.path,
+                fileType: req.file.mimetype,
+                fileSize: fileSizeFormatter(req.file.size, 2)
+            }
+        })
+        res.status(201).send({
+            message: 'File Uploaded Successfully',
+            image: req.file.originalname
+        });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
 exports.AllArticle = async (req, res) => {
     const allArticle = await Article.find();
     try {
@@ -78,24 +100,6 @@ exports.DeleteArticle = async (req, res) => {
             message: "Could not delete Article with id=" + id
         });
     }
-    // const id = req.query.id;
-    // Article.findByIdAndRemove(id)
-    //     .then(data => {
-    //         if (!data) {
-    //             res.status(404).send({
-    //                 message: `Cannot delete Article with id=${id}. Maybe Article was not found!`
-    //             });
-    //         } else {
-    //             res.send({
-    //                 message: "Article was deleted successfully!"
-    //             });
-    //         }
-    //     })
-    //     .catch(err => {
-    //         res.status(500).send({
-    //             message: "Could not delete Article with id=" + id
-    //         });
-    //     });
 };
 
 exports.UpdateArticle = async (req, res) => {
@@ -109,11 +113,17 @@ exports.UpdateArticle = async (req, res) => {
 
         const id = req.query.id;
         const data = await Article.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+
         if (!data) {
             return res.status(404).send({
-                message: `Cannot update Article with id=${id}. Maybe Article was not found!`
-            });
-        } return res.status(200).send({ message: "Article was updated successfully." });
+                message: `Cannot update Article with id=${id}. Maybe Article was not found!`});
+        }
+
+        return res.status(200).send({
+            message: "Article was updated successfully.",
+            postId: data._id.toString()
+        });
+
     } catch (error) {
         res.status(500).send({
             message: "Error updating Article with id=" + id
@@ -121,12 +131,23 @@ exports.UpdateArticle = async (req, res) => {
     }
 };
 
-exports.SingleuploadArticle = async (req, res) => {
+exports.updateImageArticle = async (req, res) => {
     try {
-        if (!req.params.postId) {
-            throw new Error('require field')
+        const id = req.query.id;
+        console.log(id);
+        const post = await Article.findById(id)
+
+        if(!post.image.fileName){
+            return res.status(404).send({
+                message: `Article was not found!`});
         }
-        await Article.findByIdAndUpdate(req.params.postId, {
+
+        fs.unlink(`./uploads/${post.image.fileName}`) 
+        post.image = undefined
+        await post.save()
+
+        const data = await Article.findByIdAndUpdate(id, 
+            {
             image: {
                 fileName: req.file.originalname,
                 filePath: req.file.path,
@@ -134,6 +155,12 @@ exports.SingleuploadArticle = async (req, res) => {
                 fileSize: fileSizeFormatter(req.file.size, 2)
             }
         })
+
+        if (!data) {
+            return res.status(404).send({
+                message: `Cannot update Article. Maybe Article was not found!`});
+        }
+
         res.status(201).send({
             message: 'File Uploaded Successfully',
             image: req.file.originalname

@@ -14,6 +14,8 @@ router.delete("/delArticle", cleanBody, ArticleController.DeleteArticle);
 
 router.post("/uploadArticle/:postId", upload.single('image') , ArticleController.SingleuploadArticle);
 
+router.post("/updateImageArticle", upload.single('image') , ArticleController.updateImageArticle);
+
 router.put("/updateArticle", cleanBody, ArticleController.UpdateArticle);
 
 

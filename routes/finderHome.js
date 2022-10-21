@@ -10,6 +10,8 @@ router.post("/create", validateToken , FindHomeController.Create);
 
 router.post("/singleUpload/:postId", upload.single('image') , FindHomeController.Singleupload);
 
+router.post("/updateImageFindHome", upload.single('image') , FindHomeController.updateImageFindHome);
+
 router.get("/allPost", cleanBody, FindHomeController.FindAllPost);
 
 router.get("/onePost", cleanBody, FindHomeController.FindOnePost);
