@@ -3,7 +3,7 @@ const FindHome = require("../model/findHomeModel");
 const User = require("../model/userModel");
 const { default: mongoose } = require("mongoose");
 const fs = require('fs/promises');
-const { Console } = require("console");
+
 
 const fileSizeFormatter = (bytes, decimal) => {
     if (bytes === 0) { return '0 Bytes'; }
@@ -128,7 +128,10 @@ exports.DeletePost = async (req, res) => {
         const post = await FindHome.findById(id)
         console.log(post);
 
-        await fs.unlink(`./uploads/${post.image.fileName}`)
+        const nameImage = post.image.filePath.substr(8);
+        console.log(nameImage);
+
+        await fs.unlink(`./uploads/${nameImage}`)
 
         const data = await FindHome.findByIdAndRemove(id)
         if (!data) {
@@ -184,8 +187,11 @@ exports.updateImageFindHome = async (req, res) => {
                 message: `FindHome was not found!`
             });
         }
+        
+        const nameImage = post.image.filePath.substr(8);
+        console.log(nameImage);
 
-        fs.unlink(`./uploads/${post.image.fileName}`)
+        fs.unlink(`./uploads/${nameImage}`)  
         post.image = undefined
         await post.save()
 

@@ -86,7 +86,10 @@ exports.DeleteArticle = async (req, res) => {
         const post = await Article.findById(id)
         console.log(post);
 
-        await fs.unlink(`./uploads/${post.image.fileName}`)
+        const nameImage = post.image.filePath.substr(8);
+        console.log(nameImage);
+
+        await fs.unlink(`./uploads/${nameImage}`)
 
         const data = await Article.findByIdAndRemove(id)
         if (!data) {
@@ -144,7 +147,10 @@ exports.updateImageArticle = async (req, res) => {
                 message: `Article was not found!`});
         }
 
-        fs.unlink(`./uploads/${post.image.fileName}`) 
+        const nameImage = post.image.filePath.substr(8);
+        console.log(nameImage);
+
+        fs.unlink(`./uploads/${nameImage}`) 
         post.image = undefined
         await post.save()
 
