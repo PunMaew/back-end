@@ -5,6 +5,7 @@ const User = require("../model/userModel");
 const FindHome = require("../model/findHomeModel");
 const { generateJwt } = require("../helpers/generateJwt");
 const jwt = require("jsonwebtoken");
+const fs = require('fs/promises')
 
 const userSchema = Joi.object().keys({
   firstName: Joi.string().required(),
@@ -573,6 +574,8 @@ exports.DeleteUser = async (req, res) => {
       const findAllPostById = await FindHome.find({ author: req.query.id })
 
       for (let index = 0; index < findAllPostById.length; index++) {
+        const nameImage = findAllPostById[index].image.filePath.substr(8);
+        await fs.unlink(`./uploads/${nameImage}`)
         await FindHome.findByIdAndDelete(findAllPostById[index]._id);
       }
       await  User.findByIdAndDelete(req.query.id);
@@ -590,9 +593,9 @@ exports.DeleteUser = async (req, res) => {
       error: error.message,
       status: error.code
     });
+
+    console.log(error);
   }
-
-
 };
 
 exports.GetUserById = async (req, res) => {
