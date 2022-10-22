@@ -1,8 +1,8 @@
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const User = require("../src/model/userModel");
+const Admin = require("../src/model/adminModel");
 
-async function validateToken(req, res, next) {
+async function validateTokenAdmin(req, res, next) {
   const authorizationHeader = req.headers.authorization;
   let result;
   if (!authorizationHeader)
@@ -17,7 +17,7 @@ async function validateToken(req, res, next) {
   };
 
   try {
-    let user = await User.findOne({
+    let user = await Admin.findOne({
       accessToken: token,
     });
 
@@ -65,4 +65,4 @@ async function validateToken(req, res, next) {
 };
 
 
-module.exports = {validateToken};
+module.exports = { validateTokenAdmin } ;

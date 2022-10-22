@@ -120,6 +120,23 @@ exports.FindAllLatest = async (req, res) => {
     }
 };
 
+exports.getAllSatus = async (req, res) => {
+    const getAllPost = await FindHome.find().sort().populate({
+        path:'authorInfo', select: ['firstName', 'lastName']
+    }).exec();
+    try {
+        if (getAllPost.length < 1) {
+            return res.status(200).json([]);
+        }
+
+        return res.json(getAllPost);
+    } catch (err) {
+        return res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+};
+
 exports.FindOnePost = async (req, res) => {
     const id = req.query.id;
     try {
