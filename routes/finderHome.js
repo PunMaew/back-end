@@ -20,6 +20,8 @@ router.get("/onePost", cleanBody, FindHomeController.FindOnePost);
 
 router.get("/readFileIdFindHome", cleanBody, FindHomeController.readFileFindHome);
 
+router.get("/notification", cleanBody, FindHomeController.getStausCat);
+
 router.delete("/deletePost", cleanBody, FindHomeController.DeletePost);
 
 router.put("/updatePost", cleanBody, FindHomeController.Update);

@@ -102,14 +102,12 @@ exports.FindAllPost = async (req, res) => {
 };
 
 exports.FindAllLatest = async (req, res) => {
-    const getAllPost = await FindHome.find().sort({createdAt:-1}).populate({
-        path:'authorInfo', select: ['firstName', 'lastName']
+    const getAllPost = await FindHome.find().sort({ createdAt: -1 }).populate({
+        path: 'authorInfo', select: ['firstName', 'lastName']
     }).exec();
     try {
         if (getAllPost.length < 1) {
-            return res.status(404).json({
-                error: "No post was found in DB"
-            });
+            return res.status(200).json([]);
         }
 
         return res.json(getAllPost);
@@ -122,7 +120,7 @@ exports.FindAllLatest = async (req, res) => {
 
 exports.getAllSatus = async (req, res) => {
     const getAllPost = await FindHome.find().sort().populate({
-        path:'authorInfo', select: ['firstName', 'lastName']
+        path: 'authorInfo', select: ['firstName', 'lastName']
     }).exec();
     try {
         if (getAllPost.length < 1) {
@@ -220,11 +218,11 @@ exports.updateImageFindHome = async (req, res) => {
                 message: `FindHome was not found!`
             });
         }
-        
+
         const nameImage = post.image.filePath.substr(8);
         console.log(nameImage);
 
-        fs.unlink(`./uploads/${nameImage}`)  
+        fs.unlink(`./uploads/${nameImage}`)
         post.image = undefined
         await post.save()
 
@@ -304,6 +302,25 @@ exports.readFileFindHome = async (req, res) => {
         res.status(400).send(error.message);
     }
 };
+
+exports.getStausCat = async (req, res) => {
+    const getAllPost = await FindHome.find({ statusbar: {$eq:'รับเลี้ยงแล้ว'}}).populate({
+        path: 'authorInfo', select: ['firstName', 'lastName']
+    }).exec();
+    try {
+        if (getAllPost.length < 1) {
+            return res.status(200).json([]);
+        }
+
+        return res.json(getAllPost);
+    } catch (err) {
+        return res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+};
+
+
 
 
 
