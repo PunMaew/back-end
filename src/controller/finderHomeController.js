@@ -307,12 +307,17 @@ exports.getStausCat = async (req, res) => {
     const getAllPost = await FindHome.find({ statusbar: {$eq:'รับเลี้ยงแล้ว'}}).populate({
         path: 'authorInfo', select: ['firstName', 'lastName']
     }).exec();
+
+    const numCount = getAllPost.length;
+    console.log(numCount);
     try {
         if (getAllPost.length < 1) {
-            return res.status(200).json([]);
+            return res.status(200).json([]); //ตอนไม่มีต้องส่งอย่างไร
         }
 
-        return res.json(getAllPost);
+        return res.status(200).send({
+            success: getAllPost,
+            numCount: numCount});
     } catch (err) {
         return res.status(500).json({
             error: "Something went wrong"
