@@ -17,7 +17,6 @@ const findHomeSchema = new Schema({
         receiveDate: { type: String, required: false, default: "-" },
         disease: { type: String, required: false, default: "-" },
         neutered: { type: String, required: true },
-        image: { type: String, required: false },
         gender: { type: String, required: true },
         characteristic: { type: Array, required: true },
         others: { type: String, required: false, default: "-" },
@@ -26,24 +25,43 @@ const findHomeSchema = new Schema({
         contactName: { type: String, required: true },
         tel: { type: String, required: true },
         facebook: { type: String, required: false, default: "-" },
-        line: {
-            type: String, default: "-", required: false,
-        },
+        line: { type: String, default: "-", required: false, },
     },
-    author:
-    {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "user",
-    },
+    author: { type: mongoose.Types.ObjectId, ref: "user", required: true },
     statusbar: { type: String, required: false, default: "ยังไม่ถูกรับเลี้ยง" },
+    image: {
+        fileName: {
+            type: String, required: false
+        },
+        filePath: {
+            type: String, required: false
+        },
+        fileType: {
+            type: String, required: false
+        },
+        fileSize: {
+            type: String, required: false
+        }
+    },
 },
-    {
+{
         timestamps: {
             createdAt: "createdAt",
             updatedAt: "updatedAt",
         },
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true },
+        versionKey: false
     }
 );
+
+findHomeSchema.virtual('authorInfo', {
+    ref: "user", //data
+    localField: 'author',
+    foreignField: '_id',
+    justOne: true
+})
+
 
 mongoose.pluralize(null);
 const FindHome = mongoose.model("finderHome", findHomeSchema);

@@ -1,6 +1,17 @@
 const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
+const User = require("../model/userModel");
 const { default: mongoose } = require("mongoose");
+const fs = require('fs/promises');
+
+
+const fileSizeFormatter = (bytes, decimal) => {
+    if (bytes === 0) { return '0 Bytes'; }
+    const dm = decimal || 2;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'YB', 'ZB'];
+    const index = Math.floor(Math.log(bytes) / Math.log(1000));
+    return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + ' ' + sizes[index];
+}
 
 const findHomeSchema = Joi.object().keys(
     {
@@ -36,15 +47,29 @@ const findHomeSchema = Joi.object().keys(
 //--------------------- User ---------------------
 exports.Create = async (req, res, next) => {
     try {
-        req.body.author = new mongoose.Types.ObjectId(req.decoded.id);
-        const result = findHomeSchema.validate(req.body);
-        const newCreate = new FindHome(result.value);
-        await newCreate.save();
 
-        return res.status(200).json({
-            success: true,
-            message: "Create Success",
-        });
+        const idUser = req.decoded.id;
+        const user = await User.findById(idUser);
+
+        if (user) {
+            req.body.author = idUser;
+            const result = findHomeSchema.validate(req.body);
+            const newCreate = new FindHome(result.value);
+            await newCreate.save();
+
+            const newPost = await FindHome.create(newCreate)
+            return res.status(200).json({
+                success: true,
+                message: "Create Success",
+                postId: newPost._id.toString(),
+            });
+        } else {
+            return res.status(500).json({
+                success: false,
+                message: "No user found",
+            });
+        }
+
     } catch (error) {
         console.log(error);
         return res.status(500).send(error)
@@ -60,13 +85,48 @@ exports.GetMyPost = async (req, res) => {
 
 //--------------------- User and Admin ---------------------
 exports.FindAllPost = async (req, res) => {
-    const getAllPost = await FindHome.find();
+    const getAllPost = await FindHome.find().populate({
+        path:'authorInfo', select: ['firstName', 'lastName']
+    }).exec();
     try {
         if (getAllPost.length < 1) {
-            return res.status(404).json({
-                error: "No post was found in DB"
-            });
+            return res.status(200).json([]);
         }
+
+        return res.json(getAllPost);
+    } catch (err) {
+        return res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+};
+
+exports.FindAllLatest = async (req, res) => {
+    const getAllPost = await FindHome.find().sort({ createdAt: -1 }).populate({
+        path: 'authorInfo', select: ['firstName', 'lastName']
+    }).exec();
+    try {
+        if (getAllPost.length < 1) {
+            return res.status(200).json([]);
+        }
+
+        return res.json(getAllPost);
+    } catch (err) {
+        return res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+};
+
+exports.getAllSatus = async (req, res) => {
+    const getAllPost = await FindHome.find().sort().populate({
+        path: 'authorInfo', select: ['firstName', 'lastName']
+    }).exec();
+    try {
+        if (getAllPost.length < 1) {
+            return res.status(200).json([]);
+        }
+
         return res.json(getAllPost);
     } catch (err) {
         return res.status(500).json({
@@ -76,8 +136,8 @@ exports.FindAllPost = async (req, res) => {
 };
 
 exports.FindOnePost = async (req, res) => {
+    const id = req.query.id;
     try {
-        const id = req.query.id;
         const data = await FindHome.findById(id).populate('author').exec();
         if (!data)
             return res.status(404).send({
@@ -94,42 +154,35 @@ exports.FindOnePost = async (req, res) => {
 exports.DeletePost = async (req, res) => {
     try {
         const id = req.query.id;
+        console.log(id);
+
+        const post = await FindHome.findById(id)
+        console.log(post);
+
+        const nameImage = post.image.filePath.substr(8);
+        console.log(nameImage);
+
+        await fs.unlink(`./uploads/${nameImage}`)
+
         const data = await FindHome.findByIdAndRemove(id)
         if (!data) {
             return res.status(404).send({
                 message: `Cannot delete FindHome with id=${id}. Maybe FindHome was not found!`
             });
         }
-        return res.status(200).send({ message: "FindHome was deleted successfully!" });
+        return res.status(200).send({
+            message: "FindHome was deleted successfully!"
+        });
     } catch (err) {
         res.status(500).send({
-            message: "Could not delete FindHome with id=" + id
+            message: "Could not delete FindHome "
         });
-
     }
-    // const id = req.query.id;
-    // FindHome.findByIdAndRemove(id)
-    //     .then(data => {
-    //         if (!data) {
-    //             res.status(404).send({
-    //                 message: `Cannot delete FindHome with id=${id}. Maybe FindHome was not found!`
-    //             });
-    //         } else {
-    //             res.send({
-    //                 message: "FindHome was deleted successfully!"
-    //             });
-    //         }
-    //     })
-    //     .catch(err => {
-    //         res.status(500).send({
-    //             message: "Could not delete FindHome with id=" + id
-    //         });
-    //     });
 };
 
 exports.Update = async (req, res) => {
     try {
-        
+
         if (!req.body) {
             return res.status(400).send({
                 message: "Data to update can not be empty!"
@@ -142,13 +195,60 @@ exports.Update = async (req, res) => {
             return res.status(404).send({
                 message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
             });
-        } return res.status(200).send({ message: "FindHome was updated successfully." });
+        } return res.status(200).send({
+            message: "FindHome was updated successfully.",
+            postId: data._id.toString()
+        });
     } catch (error) {
         res.status(500).send({
             message: "Error updating FindHome with id=" + id
         });
     }
-    
+
+};
+
+exports.updateImageFindHome = async (req, res) => {
+    try {
+        const id = req.query.id;
+        console.log(id);
+        const post = await FindHome.findById(id)
+
+        if (!post.image.fileName) {
+            return res.status(404).send({
+                message: `FindHome was not found!`
+            });
+        }
+
+        const nameImage = post.image.filePath.substr(8);
+        console.log(nameImage);
+
+        fs.unlink(`./uploads/${nameImage}`)
+        post.image = undefined
+        await post.save()
+
+        const data = await FindHome.findByIdAndUpdate(id,
+            {
+                image: {
+                    fileName: req.file.originalname,
+                    filePath: req.file.path,
+                    fileType: req.file.mimetype,
+                    fileSize: fileSizeFormatter(req.file.size, 2)
+                }
+            })
+
+        if (!data) {
+            return res.status(404).send({
+                message: `Cannot update FindHome. Maybe FindHome was not found!`
+            });
+        }
+
+        res.status(201).send({
+            message: 'File Uploaded Successfully',
+            image: req.file.originalname
+        });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
 };
 
 exports.GetMultipleRandom = async (req, res) => {
@@ -165,6 +265,73 @@ exports.GetMultipleRandom = async (req, res) => {
     const randomPost = getMultipleRandom(getAllPost, 3)
     return res.status(200).json(randomPost);
 }
+
+exports.Singleupload = async (req, res) => {
+    try {
+        if (!req.params.postId) {
+            throw new Error('require field')
+        }
+        await FindHome.findByIdAndUpdate(req.params.postId, {
+
+            image: {
+                fileName: req.file.originalname,
+                filePath: req.file.path,
+                fileType: req.file.mimetype,
+                fileSize: fileSizeFormatter(req.file.size, 2)
+            }
+        })
+        res.status(201).send({
+            message: 'File Uploaded Successfully',
+            image: req.file.originalname
+        });
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
+exports.readFileFindHome = async (req, res) => {
+    try {
+        const id = req.query.id;
+        const post = await FindHome.findById(id)
+        const nameImage = post.image.filePath.substr(8);
+        console.log(nameImage);
+        const data = await fs.readFile(`./uploads/${nameImage}`);
+        return res.end(data);
+
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+};
+
+exports.getStausCat = async (req, res) => {
+    const getAllPost = await FindHome.find({ statusbar: {$eq:'รับเลี้ยงแล้ว'}}).populate({
+        path: 'authorInfo', select: ['firstName', 'lastName']
+    }).exec();
+
+    const numCount = getAllPost.length;
+    console.log(numCount);
+    try {
+        if (getAllPost.length < 1) {
+            return res.status(200).json([]); //ตอนไม่มีต้องส่งอย่างไร
+        }
+
+        return res.status(200).send({
+            success: getAllPost,
+            numCount: numCount});
+    } catch (err) {
+        return res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+};
+
+
+
+
+
+
+
+
 
 
 
