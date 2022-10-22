@@ -94,8 +94,8 @@ exports.FindOneArticle = async (req, res) => {
 };
 
 exports.DeleteArticle = async (req, res) => {
+    const id = req.query.id;
     try {
-        const id = req.query.id;
         console.log(id);
 
         const post = await Article.findById(id)
