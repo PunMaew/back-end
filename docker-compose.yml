@@ -8,6 +8,8 @@ services :
     image: ghcr.io/skeletonbear/back-end-punmaew:latest
     ports:
       - "5443:5443"
+    volumes:
+      - /home/punmaewadmin/back-end/uploads:/app/uploads
 networks:
   default:
     external:
