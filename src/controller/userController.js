@@ -503,9 +503,7 @@ exports.GetAllUsers = async (req, res) => {
   let users = await User.find();
   try {
     if (users.length < 1) {
-      return res.status(404).json({
-        error: "No users was found in DB",
-      });
+      return res.status(200).json([]);
     }
     return res.json(users);
   } catch (err) {

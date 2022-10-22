@@ -66,9 +66,7 @@ exports.AllArticle = async (req, res) => {
     }).exec();
     try {
         if (allArticle.length < 1) {
-            return res.status(404).json({
-                error: "No post was found in DB"
-            });
+            return res.status(200).json([]);
         }
         return res.json(allArticle);
     } catch (err) {

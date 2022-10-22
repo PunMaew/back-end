@@ -10,8 +10,8 @@ const userSchema = new Schema(
     active: { type: Boolean, default: false },
     address: {
       province: { type: String, required: true ,default: null},
-      district: { type: String, required: false, default: null },
-      subDistrict: { type: String, required: false, default: null },
+      district: { type: String, required: false, default:" "},
+      subDistrict: { type: String, required: false, default: " " },
       zipCode: { type: String, required: true ,default: null},
     },
     password: { type: String, required: true },
