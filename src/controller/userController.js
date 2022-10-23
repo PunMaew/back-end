@@ -752,7 +752,7 @@ exports.getBestmatch = async (req, res) => {
   const idealCat = await User.findById(id).select('idealCat');
   //console.log(idealCat);
 
-  const getData = await FindHome.find({ generalInfo: {characteristic :{$in:['ขี้อ้อน']}}});
+  const getData = await FindHome.find({ generalInfo: {characteristic :{ $elemMatch: {$in:['ขี้อ้อน']}}}});
   //console.log(getData);
 return res.json(getData);
 };
