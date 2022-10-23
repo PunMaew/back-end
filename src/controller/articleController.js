@@ -26,7 +26,7 @@ exports.CreateArticle = async (req, res) => {
         const newArticle = new Article(result.value);
         console.log(newArticle);
         await newArticle.save();
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        //res.setHeader('Access-Control-Allow-Origin', '*');
         return res.status(200).json({
             success: true,
             message: "Create Success",
@@ -186,7 +186,7 @@ exports.updateImageArticle = async (req, res) => {
                 message: `Cannot update Article. Maybe Article was not found!`
             });
         }
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        //res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(201).send({
             message: 'File Uploaded Successfully',
             image: req.file.originalname
