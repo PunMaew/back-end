@@ -24,9 +24,9 @@ exports.CreateArticle = async (req, res) => {
         req.body.authorAdmin = new mongoose.Types.ObjectId(req.decoded.id);
         const result = articleSchema.validate(req.body);
         const newArticle = new Article(result.value);
-        console.log(newArticle);
+        //console.log(newArticle);
         await newArticle.save();
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        //res.setHeader('Access-Control-Allow-Origin', '*');
         return res.status(200).json({
             success: true,
             message: "Create Success",
@@ -51,13 +51,14 @@ exports.SingleuploadArticle = async (req, res) => {
                 fileSize: fileSizeFormatter(req.file.size, 2)
             }
         })
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        //res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(201).send({
             message: 'File Uploaded Successfully',
             image: req.file.originalname
         });
     } catch (error) {
-        res.status(400).send(error.message);
+        res.status(500).send(error.message);
+        console.error(error);
     }
 };
 
@@ -119,7 +120,9 @@ exports.DeleteArticle = async (req, res) => {
     } catch (err) {
         res.status(500).send({
             message: "Could not delete Article with id=" + id
+
         });
+        console.log(err);
     }
 };
 
@@ -187,7 +190,7 @@ exports.updateImageArticle = async (req, res) => {
                 message: `Cannot update Article. Maybe Article was not found!`
             });
         }
-        res.setHeader('Access-Control-Allow-Origin', '*');
+        //res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(201).send({
             message: 'File Uploaded Successfully',
             image: req.file.originalname
@@ -210,5 +213,4 @@ exports.readFile = async (req, res) => {
         res.status(400).send(error.message);
     }
 };
-
 

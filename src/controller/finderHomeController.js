@@ -154,16 +154,15 @@ exports.FindOnePost = async (req, res) => {
 exports.DeletePost = async (req, res) => {
     try {
         const id = req.query.id;
-        console.log(id);
+        //console.log(id);
 
         const post = await FindHome.findById(id)
-        console.log(post);
+        //console.log(post);
 
         const nameImage = post.image.filePath.substr(8);
-        console.log(nameImage);
-
+        console.log(nameImage); 
         await fs.unlink(`./uploads/${nameImage}`)
-
+        console.log("1");
         const data = await FindHome.findByIdAndRemove(id)
         if (!data) {
             return res.status(404).send({
@@ -177,6 +176,7 @@ exports.DeletePost = async (req, res) => {
         res.status(500).send({
             message: "Could not delete FindHome "
         });
+        console.error(err);
     }
 };
 
@@ -212,13 +212,13 @@ exports.updateImageFindHome = async (req, res) => {
         const id = req.query.id;
         console.log(id);
         const post = await FindHome.findById(id)
-
+        console.log(post);
         if (!post.image.fileName) {
             return res.status(404).send({
                 message: `FindHome was not found!`
             });
         }
-
+        
         const nameImage = post.image.filePath.substr(8);
         console.log(nameImage);
 
@@ -248,6 +248,7 @@ exports.updateImageFindHome = async (req, res) => {
         });
     } catch (error) {
         res.status(400).send(error.message);
+        console.log(error);
     }
 };
 
