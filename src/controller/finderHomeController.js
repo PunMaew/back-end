@@ -217,14 +217,20 @@ exports.updateImageFindHome = async (req, res) => {
             return res.status(404).send({
                 message: `FindHome was not found!`
             });
-        }
+        } else {
+            const nameImage = post.image.filePath.substr(8);
+            console.log(nameImage);
+            fs.unlink(`./uploads/${nameImage}`)
+            post.image = undefined
+            await post.save()
+        };
         
-        const nameImage = post.image.filePath.substr(8);
-        console.log(nameImage);
+        // const nameImage = post.image.filePath.substr(8);
+        // console.log(nameImage);
 
-        fs.unlink(`./uploads/${nameImage}`)
-        post.image = undefined
-        await post.save()
+        // fs.unlink(`./uploads/${nameImage}`)
+        // post.image = undefined
+        // await post.save()
 
         const data = await FindHome.findByIdAndUpdate(id,
             {

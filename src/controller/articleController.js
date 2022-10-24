@@ -92,7 +92,7 @@ exports.FindOneArticle = async (req, res) => {
         });
     } catch (err) {
         //res.status(500).send({ message: "Error retrieving Post with id=" + id });
-    console.log(err);
+        console.log(err);
     }
 };
 
@@ -162,19 +162,19 @@ exports.updateImageArticle = async (req, res) => {
         const id = req.query.id;
         console.log(id);
         const post = await Article.findById(id)
-console.log(post);
+        console.log(post);
+        
         if (!post.image.fileName) {
             return res.status(404).send({
                 message: `Article not found! fileName`
             });
-        }
-
-        const nameImage = post.image.filePath.substr(8);
-        console.log(nameImage);
-
-        fs.unlink(`./uploads/${nameImage}`)
-        post.image = undefined
-        await post.save()
+        } else {
+            const nameImage = post.image.filePath.substr(8);
+            console.log(nameImage);
+            fs.unlink(`./uploads/${nameImage}`)
+            post.image = undefined
+            await post.save()
+        };
 
         const data = await Article.findByIdAndUpdate(id,
             {
