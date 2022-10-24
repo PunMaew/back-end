@@ -43,6 +43,7 @@ exports.SingleuploadArticle = async (req, res) => {
         if (!req.params.postId) {
             throw new Error('require field')
         }
+
         await Article.findByIdAndUpdate(req.params.postId, {
             image: {
                 fileName: req.file.originalname,
@@ -161,10 +162,10 @@ exports.updateImageArticle = async (req, res) => {
         const id = req.query.id;
         console.log(id);
         const post = await Article.findById(id)
-
+console.log(post);
         if (!post.image.fileName) {
             return res.status(404).send({
-                message: `Article was not found!`
+                message: `Article not found! fileName`
             });
         }
 
