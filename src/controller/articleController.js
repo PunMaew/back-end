@@ -24,9 +24,9 @@ exports.CreateArticle = async (req, res) => {
         req.body.authorAdmin = new mongoose.Types.ObjectId(req.decoded.id);
         const result = articleSchema.validate(req.body);
         const newArticle = new Article(result.value);
-        console.log(newArticle);
+        //console.log(newArticle);
         await newArticle.save();
-
+        //res.setHeader('Access-Control-Allow-Origin', '*');
         return res.status(200).json({
             success: true,
             message: "Create Success",
@@ -43,6 +43,7 @@ exports.SingleuploadArticle = async (req, res) => {
         if (!req.params.postId) {
             throw new Error('require field')
         }
+
         await Article.findByIdAndUpdate(req.params.postId, {
             image: {
                 fileName: req.file.originalname,
@@ -51,12 +52,14 @@ exports.SingleuploadArticle = async (req, res) => {
                 fileSize: fileSizeFormatter(req.file.size, 2)
             }
         })
+        //res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(201).send({
             message: 'File Uploaded Successfully',
             image: req.file.originalname
         });
     } catch (error) {
         res.status(400).send(error.message);
+        console.error(error);
     }
 };
 
@@ -89,7 +92,7 @@ exports.FindOneArticle = async (req, res) => {
         });
     } catch (err) {
         //res.status(500).send({ message: "Error retrieving Post with id=" + id });
-    console.log(err);
+        console.log(err);
     }
 };
 
@@ -118,7 +121,9 @@ exports.DeleteArticle = async (req, res) => {
     } catch (err) {
         res.status(500).send({
             message: "Could not delete Article with id=" + id
+
         });
+        console.log(err);
     }
 };
 
@@ -157,19 +162,19 @@ exports.updateImageArticle = async (req, res) => {
         const id = req.query.id;
         console.log(id);
         const post = await Article.findById(id)
-
+        console.log(post);
+        
         if (!post.image.fileName) {
             return res.status(404).send({
-                message: `Article was not found!`
+                message: `Article not found! fileName`
             });
-        }
-
-        const nameImage = post.image.filePath.substr(8);
-        console.log(nameImage);
-
-        fs.unlink(`./uploads/${nameImage}`)
-        post.image = undefined
-        await post.save()
+        } else {
+            const nameImage = post.image.filePath.substr(8);
+            console.log(nameImage);
+            fs.unlink(`./uploads/${nameImage}`)
+            post.image = undefined
+            await post.save()
+        };
 
         const data = await Article.findByIdAndUpdate(id,
             {
@@ -186,7 +191,7 @@ exports.updateImageArticle = async (req, res) => {
                 message: `Cannot update Article. Maybe Article was not found!`
             });
         }
-
+        //res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(201).send({
             message: 'File Uploaded Successfully',
             image: req.file.originalname
@@ -209,5 +214,4 @@ exports.readFile = async (req, res) => {
         res.status(400).send(error.message);
     }
 };
-
 
