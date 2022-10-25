@@ -215,3 +215,18 @@ exports.readFile = async (req, res) => {
     }
 };
 
+exports.GetMultipleRandom = async (req, res) => {
+    const getAllPost = await Article.find();
+    if (!getAllPost || getAllPost.length === 0) {
+        return res.status(201).send({
+            message: "No Post Now"
+        });
+    }
+    function getMultipleRandom(arr, num) {
+        const shuffled = [...arr].sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, num);
+    }
+    const randomPost = getMultipleRandom(getAllPost, 3)
+    return res.status(200).json(randomPost);
+}
+
