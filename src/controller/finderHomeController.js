@@ -118,6 +118,23 @@ exports.FindAllLatest = async (req, res) => {
     }
 };
 
+exports.FindAlloldPost = async (req, res) => {
+    const getAllPost = await FindHome.find().sort({ createdAt: 1 }).populate({
+        path: 'authorInfo', select: ['firstName', 'lastName']
+    }).exec();
+    try {
+        if (getAllPost.length < 1) {
+            return res.status(200).json([]);
+        }
+
+        return res.json(getAllPost);
+    } catch (err) {
+        return res.status(500).json({
+            error: "Something went wrong"
+        });
+    }
+};
+
 exports.getAllSatus = async (req, res) => {
     const getAllPost = await FindHome.find().sort().populate({
         path: 'authorInfo', select: ['firstName', 'lastName']

@@ -21,7 +21,11 @@ const userSchema = new Schema(
     accessToken: { type: String, default: null }, // JWT token
     emailToken: { type: String, default: null },
     emailTokenExpires: { type: Date, default: null },
-    idealCat: { type: Array, required: false },
+    //idealCat: { type: Array, required: false },
+    idealCat:[{
+      id: {type: mongoose.Schema.Types.ObjectId, require: true},
+      answer : {type: String, require: true}
+  }],
   },
   {
     timestamps: {

@@ -709,7 +709,7 @@ exports.DeleteUser = async (req, res) => {
         await fs.unlink(`./uploads/${nameImage}`)
         await FindHome.findByIdAndDelete(findAllPostById[index]._id);
       }
-      await  User.findByIdAndDelete(req.query.id);
+      await User.findByIdAndDelete(req.query.id);
       return res.status(200).json({
         message: "Delete User " + user.firstName + " Success."
       })
@@ -747,12 +747,24 @@ exports.GetUserById = async (req, res) => {
   }
 };
 
-exports.getBestmatch = async (req, res) => {
+exports.getIdealCat = async (req, res) => {
   const id = req.decoded.id;
-  const idealCat = await User.findById(id).select('idealCat');
-  //console.log(idealCat);
+  //console.log(id);
+  try {
+    const getideal = await User.findById(id).select('idealCat');
+    return res.status(200).json(getideal);
+  } catch (error) {
+    console.log(error);
+  }
 
-  const getData = await FindHome.find({ generalInfo: {characteristic :{ $elemMatch: {$in:['ขี้อ้อน']}}}});
-  //console.log(getData);
-return res.json(getData);
 };
+
+// exports.getBestmatch = async (req, res) => {
+//   const id = req.decoded.id;
+//   const idealCat = await User.findById(id).select('idealCat');
+//   //console.log(idealCat);
+
+//   const getData = await FindHome.find({ generalInfo: {characteristic :{ $elemMatch: {$in:['ขี้อ้อน']}}}});
+//   //console.log(getData);
+// return res.json(getData);
+// };
