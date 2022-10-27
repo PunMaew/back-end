@@ -23,4 +23,6 @@ router.post("/updateImageArticle", upload.single('image') , ArticleController.up
 
 router.put("/updateArticle", cleanBody, ArticleController.UpdateArticle);
 
+router.get("/randomPostArticle", cleanBody, ArticleController.GetMultipleRandom);
+
 module.exports = router;

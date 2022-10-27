@@ -36,7 +36,7 @@ router.get("/getUserById", cleanBody, AuthController.GetUserById);
 
 router.get("/getUser", validateToken, AuthController.getUser);
 
-router.get("/getBestmatch", validateToken, AuthController.getBestmatch);
+//router.get("/getBestmatch", validateToken, AuthController.getBestmatch);
 
 router.put("/editProfile", cleanBody, AuthController.EditProfile);
 
@@ -45,5 +45,7 @@ router.put("/againOTP", cleanBody, AuthController.AgainOTPSignup);
 router.put("/idealCat", validateToken, AuthController.IdealCat); 
 
 router.delete("/deleteUser", cleanBody, AuthController.DeleteUser);
+
+router.get("/getIdealCat", validateToken, AuthController.getIdealCat); 
 
 module.exports = router;
