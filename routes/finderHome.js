@@ -28,6 +28,8 @@ router.delete("/deletePost", cleanBody, FindHomeController.DeletePost);
 
 router.put("/updatePost", cleanBody, FindHomeController.Update);
 
+router.put("/updatePostStatus", cleanBody, FindHomeController.UpdateStatus);
+
 router.get("/getMyPost", cleanBody, FindHomeController.GetMyPost);
 
 router.get("/randomPost", cleanBody, FindHomeController.GetMultipleRandom);
