@@ -224,6 +224,33 @@ exports.Update = async (req, res) => {
 
 };
 
+exports.UpdateStatus = async (req, res) => {
+    try {
+
+        if (!req.body) {
+            return res.status(400).send({
+                message: "Data to update can not be empty!"
+            });
+        }
+
+        const id = req.query.id;
+        const data = await FindHome.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+        if (!data) {
+            return res.status(404).send({
+                message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
+            });
+        } return res.status(200).send({
+            message: "FindHome was updated successfully.",
+            postId: data._id.toString()
+        });
+    } catch (error) {
+        res.status(500).send({
+            message: "Error updating FindHome with id=" + id
+        });
+    }
+
+};
+
 exports.updateImageFindHome = async (req, res) => {
     try {
         const id = req.query.id;
