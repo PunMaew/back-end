@@ -1,7 +1,6 @@
 const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
 const User = require("../model/userModel");
-const Interest = require("../model/interestmodel");
 const { default: mongoose } = require("mongoose");
 const fs = require('fs/promises');
 
@@ -252,16 +251,6 @@ exports.UpdateStatus = async (req, res) => {
 
 };
 
-exports.UpdateStatusTEST = async (req, res) => {
-    const id = req.query.id;
-    try {
-
-    } catch (error) {
-
-    }
-
-};
-
 exports.updateImageFindHome = async (req, res) => {
     try {
         const id = req.query.id;
@@ -394,37 +383,51 @@ exports.getStausCat = async (req, res) => {
 };
 
 exports.LikePost = async (req, res) => {
-    const Userid = req.decoded.id;
-    console.log(Userid);
-    const Postid = req.query.id; //
-    console.log(Postid);
-    try {
-        //const cart = await Interest.findOne({ Userid });
-        // console.log(cart);
-        //     const item = await FindHome.findOne({ _id: Postid });
-        //    console.log(item);
+    const id = req.decoded.id;
+    const Postid = req.query.id;
 
-        // if (!item) {
-        //     res.status(404).send({ message: "item not found" });
-        //     return;
-        // }
+    const findPostByPostid = await FindHome.findById(Postid);
+    if (findPostByPostid) {
+        try {
+            // ไปหา favor ของผู้ใช้คนนั้นๆมา
+            const getFavor = await User.findById(id).select('favor');
 
-        //If cart already exists for user,
-        // if (cart) {
-        //     const itemIndex = cart.items.findIndex((item) => item._id == _id);
-        // } else {
-        //     //no cart exists, create one
-        const newCart = await Interest.create({
-            userId: Userid,
-            items: itemId.Postid 
-        });
-        return res.status(201).send(newCart);
-    } catch (error) {
-        console.log(error);
-        res.status(500).send("something went wrong");
+            // สร้างตัวแปร truefalse มาเก็บไว้เช็คว่า ที่กดไลค์เข้ามา มันเคยมีแล้วหรือยัง
+            let checkDuplicate = false;
+
+            // ลูปเช็คว่ามีซำ้ไหม ถ้ามีให้ตั้ง true
+            for (let index = 0; index < getFavor.favor.length; index++) {
+                if (Postid == getFavor.favor[index].itemId) {
+                    checkDuplicate = true;
+                }
+            }
+
+            if (checkDuplicate === true) {
+                await User.updateOne({ _id: id }, { $pull: { favor: { itemId: Postid } } })
+                return res.status(200).json({
+                    status: 200,
+                    message: "Unlike สำเร็จ"
+                })
+            } else {
+                await User.updateOne({ _id: id }, { $push: { favor: { itemId: Postid } } })
+                return res.status(200).json({
+                    status: 200,
+                    message: "Like สำเร็จ"
+                })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send("something went wrong");
+        }
+    } else {
+        return res.status(404).json({
+            status: 404,
+            message: "Post by Post id is not found."
+        })
     }
 };
 
+//ต้อง get ข้อมูลลูปอาเรย์ทุกตัวให้หวาน
 
 
 
