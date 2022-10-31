@@ -10,18 +10,17 @@ const userSchema = new Schema(
     password: { type: String, required: true ,minLength: 6},
     active: { type: Boolean, default: false },
     role: { type: String, default: "USER" },
-    address: {
-      province: { type: String, required: true ,default: null},
-      district: { type: String, required: false, default:" "},
-      //subDistrict: { type: String, required: false, default: " " }, //!เอาออก
-      //zipCode: { type: String, required: true ,default: null}, //!เอาออก
-    },
+    // address: {
+    //   //province: { type: String, required: true ,default: null}, //!เอาออก
+    //   //district: { type: String, required: false, default:" "}, //!เอาออก
+    //   //subDistrict: { type: String, required: false, default: " " }, //!เอาออก
+    //   //zipCode: { type: String, required: true ,default: null}, //!เอาออก
+    // },
     resetPasswordToken: { type: String, default: null },
     resetPasswordExpires: { type: Date, default: null },
     accessToken: { type: String, default: null }, // JWT token
     emailToken: { type: String, default: null },
     emailTokenExpires: { type: Date, default: null },
-    //idealCat: { type: Array, required: false },
     idealCat:[{
       id: {type: mongoose.Schema.Types.ObjectId, require: true},
       answer : {type: String, require: true}

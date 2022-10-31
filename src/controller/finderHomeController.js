@@ -393,54 +393,6 @@ exports.getStausCat = async (req, res) => {
     }
 };
 
-// exports.LikePost = async (req, res) => {
-//     const Userid = req.decoded.id;
-//     const Postid = req.query.id;
-//     try {
-//         const cart = await Interest.findOne({ Userid });
-//         const item = await FindHome.findOne({ _id: Postid });
-//         if (!item) {
-//             res.status(404).send({ message: "item not found" });
-//             return;
-//         }
-
-//         //If cart already exists for user,
-//         if (cart) {
-//             const itemIndex = cart.items.findIndex((item) => item._id == _id);
-//             //check if product exists or not
-//             if (itemIndex > -1) {
-//                 let product = cart.items[itemIndex];
-//                 product.quantity += quantity;
-//                 cart.bill = cart.items.reduce((acc, curr) => {
-//                     return acc + curr.quantity * curr.price;
-//                 }, 0)
-//                 cart.items[itemIndex] = product;
-//                 await cart.save();
-//                 res.status(200).send(cart);
-//             } else {
-//                 cart.items.push({ itemId, name, quantity, price });
-//                 cart.bill = cart.items.reduce((acc, curr) => {
-//                     return acc + curr.quantity * curr.price;
-//                 }, 0)
-//                 await cart.save();
-//                 res.status(200).send(cart);
-//             }
-//         } else {
-//             //no cart exists, create one
-//             const newCart = await Cart.create({
-//                 owner,
-//                 items: [{ itemId, name, quantity, price }],
-//                 bill: quantity * price,
-//             });
-//             return res.status(201).send(newCart);
-//         }
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).send("something went wrong");
-//     }
-// };
-
-
 exports.LikePost = async (req, res) => {
     const Userid = req.decoded.id;
    // console.log(Userid);
@@ -463,7 +415,7 @@ exports.LikePost = async (req, res) => {
         } else {
             //no cart exists, create one
             const newCart = await Interest.create({
-                Userid,
+                userId,
                 items: [{ Postid }],
             });
             return res.status(201).send(newCart);
@@ -473,6 +425,7 @@ exports.LikePost = async (req, res) => {
         res.status(500).send("something went wrong");
     }
 };
+
 
 
 
