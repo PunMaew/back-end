@@ -40,7 +40,8 @@ const articleSchema = new Schema({
 );
 
 articleSchema.virtual('authorAdminInfo', {
-    ref: "user", //data
+    //ref: "user", //data
+    ref: "admin", //data
     localField: 'authorAdmin',
     foreignField: '_id',
     justOne: true

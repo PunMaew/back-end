@@ -1,6 +1,7 @@
 const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
 const User = require("../model/userModel");
+const Interest = require("../model/interestmodel");
 const { default: mongoose } = require("mongoose");
 const fs = require('fs/promises');
 
@@ -23,9 +24,9 @@ const findHomeSchema = Joi.object().keys(
             location:
             {
                 province: Joi.string().required(),
-                subDistrict: Joi.string().required(),
+                //subDistrict: Joi.string().required(),//!เอาออก
                 district: Joi.string().required(),
-                zipCode: Joi.string().required(),
+                //zipCode: Joi.string().required(),//!เอาออก
             },
             receiveVaccine: Joi.string().required(),
             receiveDate: Joi.string().required(),
@@ -86,7 +87,7 @@ exports.GetMyPost = async (req, res) => {
 //--------------------- User and Admin ---------------------
 exports.FindAllPost = async (req, res) => {
     const getAllPost = await FindHome.find().populate({
-        path:'authorInfo', select: ['firstName', 'lastName']
+        path: 'authorInfo', select: ['firstName', 'lastName']
     }).exec();
     try {
         if (getAllPost.length < 1) {
@@ -177,7 +178,7 @@ exports.DeletePost = async (req, res) => {
         //console.log(post);
 
         const nameImage = post.image.filePath.substr(8);
-        console.log(nameImage); 
+        console.log(nameImage);
         await fs.unlink(`./uploads/${nameImage}`)
         console.log("1");
         const data = await FindHome.findByIdAndRemove(id)
@@ -245,8 +246,18 @@ exports.UpdateStatus = async (req, res) => {
         });
     } catch (error) {
         res.status(500).send({
-            message: "Error updating FindHome with id=" + id
+            message: "Error updating FindHome "
         });
+    }
+
+};
+
+exports.UpdateStatusTEST = async (req, res) => {
+    const id = req.query.id;
+    try {
+
+    } catch (error) {
+        
     }
 
 };
@@ -268,7 +279,7 @@ exports.updateImageFindHome = async (req, res) => {
             post.image = undefined
             await post.save()
         };
-        
+
         // const nameImage = post.image.filePath.substr(8);
         // console.log(nameImage);
 
@@ -304,11 +315,16 @@ exports.updateImageFindHome = async (req, res) => {
 
 exports.GetMultipleRandom = async (req, res) => {
     const getAllPost = await FindHome.find();
-    if (!getAllPost || getAllPost.length === 0) {
-        return res.status(201).send({
-            message: "No Post Now"
-        });
+    // if (!getAllPost || getAllPost.length === 0) {
+    //     return res.status(201).send({
+    //         message: "No Post Now"
+    //     });
+    // }
+    
+    if (getAllPost.length < 1) {
+        return res.status(200).json([]);
     }
+
     function getMultipleRandom(arr, num) {
         const shuffled = [...arr].sort(() => 0.5 - Math.random());
         return shuffled.slice(0, num);
@@ -355,7 +371,7 @@ exports.readFileFindHome = async (req, res) => {
 };
 
 exports.getStausCat = async (req, res) => {
-    const getAllPost = await FindHome.find({ statusbar: {$eq:'รับเลี้ยงแล้ว'}}).populate({
+    const getAllPost = await FindHome.find({ statusbar: { $eq: 'รับเลี้ยงแล้ว' } }).populate({
         path: 'authorInfo', select: ['firstName', 'lastName']
     }).exec();
 
@@ -363,16 +379,40 @@ exports.getStausCat = async (req, res) => {
     console.log(numCount);
     try {
         if (getAllPost.length < 1) {
-            return res.status(200).json([]); //ตอนไม่มีต้องส่งอย่างไร
+            return res.status(200).json([]);
         }
 
         return res.status(200).send({
             success: getAllPost,
-            numCount: numCount});
+            numCount: numCount
+        });
     } catch (err) {
         return res.status(500).json({
             error: "Something went wrong"
         });
+    }
+};
+
+exports.LikePost = async (req, res) => {
+    const Userid = req.decoded.id;
+    const userint = await Interest.findById(Userid);
+    const Postid = req.query.id;
+    try {
+        if (userint) {
+            const post = await Interest.findById(Postid)
+            post.like = true
+            console.log(post);
+            //await post.save()
+            //ลองดึงค่าดูก่อน
+        } else {
+            const data = await FindHome.findByIdAndUpdate(id,
+                {
+
+                })
+        }
+        //!สร้างอีก collection ชื่อ interest
+    } catch (error) {
+
     }
 };
 

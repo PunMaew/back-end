@@ -163,7 +163,7 @@ exports.updateImageArticle = async (req, res) => {
         console.log(id);
         const post = await Article.findById(id)
         console.log(post);
-        
+
         if (!post.image.fileName) {
             return res.status(404).send({
                 message: `Article not found! fileName`
@@ -217,11 +217,16 @@ exports.readFile = async (req, res) => {
 
 exports.GetMultipleRandom = async (req, res) => {
     const getAllPost = await Article.find();
-    if (!getAllPost || getAllPost.length === 0) {
-        return res.status(201).send({
-            message: "No Post Now"
-        });
+    // if (!getAllPost || getAllPost.length === 0) {
+    //     return res.status(201).send({
+    //         message: "No Post Now"
+    //     });
+    // }
+
+    if (getAllPost.length < 1) {
+        return res.status(200).json([]);
     }
+
     function getMultipleRandom(arr, num) {
         const shuffled = [...arr].sort(() => 0.5 - Math.random());
         return shuffled.slice(0, num);

@@ -14,11 +14,11 @@ const userSchema = Joi.object().keys({
   email: Joi.string().email({
     minDomainSegments: 2,
   }),
-  password: Joi.string().required().min(4),
+  password: Joi.string().required().min(6),
   confirmPassword: Joi.string().valid(Joi.ref("password")),
   address: {
     province: Joi.string().required(),
-    zipCode: Joi.string().required(),
+    //zipCode: Joi.string().required(), //!เอาออก
   },
 });
 
@@ -28,7 +28,7 @@ const AdminSchema = Joi.object().keys({
   email: Joi.string().email({
     minDomainSegments: 2,
   }),
-  password: Joi.string().required().min(4),
+  password: Joi.string().required().min(6),
   confirmPassword: Joi.string().valid(Joi.ref("password")),
 });
 
@@ -102,13 +102,12 @@ exports.Login = async (req, res) => {
   }
 };
 
-exports.EditProfile = (req, res) => {
+exports.EditProfile = async (req, res) => {
   if (!req.body) {
     return res.status(400).send({
       message: "Data to update can not be empty!"
     });
   }
-
   const id = req.query.id;
 
   User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
@@ -154,6 +153,14 @@ exports.IdealCat = async (req, res) => {
 exports.Signup = async (req, res) => {
   try {
     const result = userSchema.validate(req.body);
+    //! test check Password Not Match
+    // console.log(result.value.password);
+    // if (result.value.password != result.value.confirmPassword) {
+    //   return res.status(400).json({
+    //     error: true,
+    //     message: "Password Or Confirm Password Not Match",
+    //   });
+    // }
     if (result.error) {
       console.log(result.error.message);
       return res.json({
@@ -172,9 +179,15 @@ exports.Signup = async (req, res) => {
         message: "Email is already in use",
       });
     }
+    if (result.value.password != result.value.confirmPassword) {
+      return res.status(400).json({
+        error: true,
+        message: "Password Or Confirm Password Not Match",
+      });
+    }
     const hash = await User.hashPassword(result.value.password);
 
-    //    remove the confirmPassword field from the result as we dont need to save this in the db.
+    // remove the confirmPassword field from the result as we dont need to save this in the db.
     delete result.value.confirmPassword;
     result.value.password = hash;
     let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
@@ -759,12 +772,26 @@ exports.getIdealCat = async (req, res) => {
 
 };
 
-// exports.getBestmatch = async (req, res) => {
-//   const id = req.decoded.id;
-//   const idealCat = await User.findById(id).select('idealCat');
-//   //console.log(idealCat);
+exports.getBestmatch = async (req, res) => {
+  const id = req.decoded.id;
+  const idealCat = await User.findById(id).select('idealCat');
+  console.log(idealCat.idealCat[2].answer)
+  //console.log(idealCat);
+  const getData = await FindHome.find({
+    $or: [
+      { "generalInfo.age": idealCat.idealCat[0].answer },
+      //{ "generalInfo.gender": idealCat.idealCat[1].answer }, //ขนสั้น
+      { "generalInfo.gender": idealCat.idealCat[2].answer },
+      //{ "generalInfo.gender": idealCat.idealCat[3].answer }, //สีแมว
+      { "generalInfo.location.province": idealCat.idealCat[4].answer },
+      { "generalInfo.location.district": idealCat.idealCat[5].answer },
+      { "generalInfo.breeds": idealCat.idealCat[6].answer },
+      //{ "generalInfo.breeds": idealCat.idealCat[7].answer }, //กะบะทราย
+      { "generalInfo.neutered": idealCat.idealCat[8].answer },
+      //{ "generalInfo.breeds": idealCat.idealCat[9].answer }, //รับวัคซีน
+      {}]
+  });
 
-//   const getData = await FindHome.find({ generalInfo: {characteristic :{ $elemMatch: {$in:['ขี้อ้อน']}}}});
-//   //console.log(getData);
-// return res.json(getData);
-// };
+  console.log(getData);
+
+};

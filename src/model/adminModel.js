@@ -6,7 +6,7 @@ const adminSchema = new Schema(
         firstName: { type: String, required: true },
         lastName: { type: String, required: true },
         email: { type: String, required: true, unique: true },
-        password: { type: String, required: true },
+        password: { type: String, required: true, minLength: 6 },
         role: { type: String, default: "ADMIN" },
         active: { type: Boolean, default: false },
         resetPasswordToken: { type: String, default: null },
