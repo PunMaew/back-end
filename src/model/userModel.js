@@ -25,6 +25,8 @@ const userSchema = new Schema(
       id: {type: mongoose.Schema.Types.ObjectId, require: true},
       answer : {type: String, require: true}
   }],
+  //favor:
+  
   },
   {
     timestamps: {

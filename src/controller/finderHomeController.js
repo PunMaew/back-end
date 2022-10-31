@@ -395,31 +395,30 @@ exports.getStausCat = async (req, res) => {
 
 exports.LikePost = async (req, res) => {
     const Userid = req.decoded.id;
-   // console.log(Userid);
+    console.log(Userid);
     const Postid = req.query.id; //
-
+    console.log(Postid);
     try {
-        const cart = await Interest.findOne({ Userid });
-       // console.log(cart);
-        const item = await FindHome.findOne({ _id: Postid });
-       // console.log(item);
+        //const cart = await Interest.findOne({ Userid });
+        // console.log(cart);
+        //     const item = await FindHome.findOne({ _id: Postid });
+        //    console.log(item);
 
-        if (!item) {
-            res.status(404).send({ message: "item not found" });
-            return;
-        }
+        // if (!item) {
+        //     res.status(404).send({ message: "item not found" });
+        //     return;
+        // }
 
-        //*If cart already exists for user,
-        if (cart) {
-            const itemIndex = cart.items.findIndex((item) => item._id == _id);
-        } else {
-            //no cart exists, create one
-            const newCart = await Interest.create({
-                userId,
-                items: [{ Postid }],
-            });
-            return res.status(201).send(newCart);
-        }
+        //If cart already exists for user,
+        // if (cart) {
+        //     const itemIndex = cart.items.findIndex((item) => item._id == _id);
+        // } else {
+        //     //no cart exists, create one
+        const newCart = await Interest.create({
+            userId: Userid,
+            items: itemId.Postid 
+        });
+        return res.status(201).send(newCart);
     } catch (error) {
         console.log(error);
         res.status(500).send("something went wrong");

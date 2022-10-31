@@ -153,14 +153,6 @@ exports.IdealCat = async (req, res) => {
 exports.Signup = async (req, res) => {
   try {
     const result = userSchema.validate(req.body);
-    //! test check Password Not Match
-    // console.log(result.value.password);
-    // if (result.value.password != result.value.confirmPassword) {
-    //   return res.status(400).json({
-    //     error: true,
-    //     message: "Password Or Confirm Password Not Match",
-    //   });
-    // }
     if (result.error) {
       console.log(result.error.message);
       return res.json({
