@@ -22,18 +22,24 @@ router.get("/onePost", cleanBody, FindHomeController.FindOnePost);
 
 router.get("/readFileIdFindHome", cleanBody, FindHomeController.readFileFindHome);
 
-router.get("/notification", cleanBody, FindHomeController.getStausCat);
+router.get("/changeStatus", cleanBody, FindHomeController.changeStatus);
+
+router.get("/getAdopt", cleanBody, FindHomeController.getAdopt);
+
+router.get("/getNotAdopt", cleanBody, FindHomeController.getNotAdopt);
 
 router.delete("/deletePost", cleanBody, FindHomeController.DeletePost);
 
 router.put("/updatePost", cleanBody, FindHomeController.Update);
 
-router.post("/updatePostStatus", cleanBody, FindHomeController.UpdateStatus);
+router.put("/updatePostStatus", cleanBody, FindHomeController.changeStatus);
 
-router.post("/likePost", validateToken ,cleanBody, FindHomeController.LikePost);//
+router.post("/likePost", validateToken ,cleanBody, FindHomeController.LikePost); //*กดถูกใจบันทึกลงตระกร้า 
 
 router.get("/getMyPost", cleanBody, FindHomeController.GetMyPost);
 
 router.get("/randomPost", cleanBody, FindHomeController.GetMultipleRandom);
+
+router.get("/getLikePost", validateToken,cleanBody, FindHomeController.getLikePost); //!Getถูกใจที่บันทึกลงตระกร้า 
 
 module.exports = router;

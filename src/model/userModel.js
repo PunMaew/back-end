@@ -34,9 +34,18 @@ const userSchema = new Schema(
       createdAt: "createdAt",
       updatedAt: "updatedAt",
     },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
     versionKey: false
   }
 );
+
+userSchema.virtual('postInfo', {
+  ref: "finderHome", //data
+  localField: 'favor',
+  foreignField: '_id',
+  justOne: true
+})
 
 mongoose.pluralize(null);
 const User = mongoose.model("user", userSchema);

@@ -13,12 +13,20 @@ const findHomeSchema = new Schema({
             district: { type: String, required: true },
             //zipCode: { type: String, required: true }, //!เอาออก
         },
-        receiveVaccine: { type: String, required: true },
+        vaccination:{ type: String, required: true },
+        //receiveVaccine: { type: String, required: true }, //!แก้เป็น Array
+        receiveVaccine: { type: Array, required: true }, //*แก้เป็น Array
         receiveDate: { type: String, required: false, default: "-" },
         disease: { type: String, required: false, default: "-" },
         neutered: { type: String, required: true },
         gender: { type: String, required: true },
-        characteristic: { type: Array, required: true },
+        //characteristic: { type: Array, required: true },//!แก้เป็นรับแบบ text
+        characteristic:{
+            hair: { type: String, required: true },
+            size: { type: String, required: true },
+            habit: { type: Array, required: true }, //*แก้เป็น Array
+            sandbox: { type: String, required: true },
+        },
         others: { type: String, required: false, default: "-" },
     },
     contact: {

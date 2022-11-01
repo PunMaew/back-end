@@ -756,7 +756,7 @@ exports.getIdealCat = async (req, res) => {
   const id = req.decoded.id;
   //console.log(id);
   try {
-    const getideal = await User.findById(id).select('idealCat');
+    const getideal = await User.findById(id).select('idealCat.answer');
     return res.status(200).json(getideal);
   } catch (error) {
     console.log(error);
@@ -767,23 +767,21 @@ exports.getIdealCat = async (req, res) => {
 exports.getBestmatch = async (req, res) => {
   const id = req.decoded.id;
   const idealCat = await User.findById(id).select('idealCat');
-  console.log(idealCat.idealCat[2].answer)
-  //console.log(idealCat);
   const getData = await FindHome.find({
     $or: [
       { "generalInfo.age": idealCat.idealCat[0].answer },
-      //{ "generalInfo.gender": idealCat.idealCat[1].answer }, //ขนสั้น
+      { "generalInfo.characteristic.hair": idealCat.idealCat[1].answer }, //ขนสั้น
       { "generalInfo.gender": idealCat.idealCat[2].answer },
-      //{ "generalInfo.gender": idealCat.idealCat[3].answer }, //สีแมว
+      { "generalInfo.color": idealCat.idealCat[3].answer }, //สีแมว
       { "generalInfo.location.province": idealCat.idealCat[4].answer },
       { "generalInfo.location.district": idealCat.idealCat[5].answer },
       { "generalInfo.breeds": idealCat.idealCat[6].answer },
-      //{ "generalInfo.breeds": idealCat.idealCat[7].answer }, //กะบะทราย
+      { "generalInfo.characteristic.sandbox": idealCat.idealCat[7].answer }, //กะบะทราย
       { "generalInfo.neutered": idealCat.idealCat[8].answer },
-      //{ "generalInfo.breeds": idealCat.idealCat[9].answer }, //รับวัคซีน
-      {}]
+      { "generalInfo.vaccination": idealCat.idealCat[9].answer }, //รับวัคซีน
+      ]
   });
+  return res.status(200).json(getData);
 
-  console.log(getData);
 
 };
