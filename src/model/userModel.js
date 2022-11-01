@@ -10,15 +10,9 @@ const userSchema = new Schema(
     password: { type: String, required: true, minLength: 6 },
     active: { type: Boolean, default: false },
     role: { type: String, default: "USER" },
-    // address: {
-    //   //province: { type: String, required: true ,default: null}, //!เอาออก
-    //   //district: { type: String, required: false, default:" "}, //!เอาออก
-    //   //subDistrict: { type: String, required: false, default: " " }, //!เอาออก
-    //   //zipCode: { type: String, required: true ,default: null}, //!เอาออก
-    // },
     resetPasswordToken: { type: String, default: null },
     resetPasswordExpires: { type: Date, default: null },
-    accessToken: { type: String, default: null }, // JWT token
+    accessToken: { type: String, default: null },
     emailToken: { type: String, default: null },
     emailTokenExpires: { type: Date, default: null },
     idealCat: [{
@@ -39,9 +33,8 @@ const userSchema = new Schema(
     versionKey: false
   }
 );
-
 userSchema.virtual('postInfo', {
-  ref: "finderHome", //data
+  ref: "finderHome", 
   localField: 'favor',
   foreignField: '_id',
   justOne: true
@@ -53,7 +46,7 @@ module.exports = User;
 
 module.exports.hashPassword = async (password) => {
   try {
-    const salt = await bcrypt.genSalt(10); // 10 rounds
+    const salt = await bcrypt.genSalt(10); 
     return await bcrypt.hash(password, salt);
   } catch (error) {
     throw new Error("Hashing failed", error);

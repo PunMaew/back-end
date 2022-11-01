@@ -9,30 +9,22 @@ const jwt = require("jsonwebtoken");
 const fs = require('fs/promises')
 
 const userSchema = Joi.object().keys({
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  email: Joi.string().email({
-    minDomainSegments: 2,
-  }),
+  firstName: Joi.string().min(4).max(30).required(),
+  lastName: Joi.string().min(4).max(30).required(),
+  email: Joi.string().email({ minDomainSegments: 2 }),
   password: Joi.string().required().min(6),
   confirmPassword: Joi.string().valid(Joi.ref("password")),
-  address: {
-    province: Joi.string().required(),
-    //zipCode: Joi.string().required(), //!เอาออก
-  },
 });
 
 const AdminSchema = Joi.object().keys({
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  email: Joi.string().email({
-    minDomainSegments: 2,
-  }),
+  firstName: Joi.string().min(4).max(30).required(),
+  lastName: Joi.string().min(4).max(30).required(),
+  email: Joi.string().email({ minDomainSegments: 2 }),
   password: Joi.string().required().min(6),
   confirmPassword: Joi.string().valid(Joi.ref("password")),
 });
 
-//--------------------- User ---------------------
+//?--------------------- User ---------------------
 exports.Login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -779,7 +771,7 @@ exports.getBestmatch = async (req, res) => {
       { "generalInfo.characteristic.sandbox": idealCat.idealCat[7].answer }, //กะบะทราย
       { "generalInfo.neutered": idealCat.idealCat[8].answer },
       { "generalInfo.vaccination": idealCat.idealCat[9].answer }, //รับวัคซีน
-      ]
+    ]
   });
   return res.status(200).json(getData);
 
