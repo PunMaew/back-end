@@ -38,7 +38,6 @@ const articleSchema = new Schema({
         versionKey: false
     }
 );
-
 articleSchema.virtual('authorAdminInfo', {
     //ref: "user", //data
     ref: "admin", //data

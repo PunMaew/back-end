@@ -1,6 +1,2 @@
 .env
 node_modules/
-# views/
-# uploads/
-# src/model/imageModel.js
-# src/helpers/filehelper.js

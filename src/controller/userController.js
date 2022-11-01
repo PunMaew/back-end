@@ -290,7 +290,7 @@ exports.ForgotPassword = async (req, res) => {
       return res.send({
         success: true,
         message:
-          "If that email address is in our database, we will send you an email to reset your password",
+          "We will send you an email to reset your password",
       });
     }
     let code = Math.floor(100000 + Math.random() * 900000);
@@ -308,7 +308,7 @@ exports.ForgotPassword = async (req, res) => {
     return res.send({
       success: true,
       message:
-        "If that email address is in our database, we will send you an email to reset your password",
+        "We will send you an email to reset your password",
     });
   } catch (error) {
     console.error("forgot-password-error", error);

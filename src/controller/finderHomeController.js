@@ -1,7 +1,6 @@
 const Joi = require("joi");
 const FindHome = require("../model/findHomeModel");
 const User = require("../model/userModel");
-const { default: mongoose } = require("mongoose");
 const fs = require('fs/promises');
 
 const fileSizeFormatter = (bytes, decimal) => {
@@ -22,16 +21,20 @@ const findHomeSchema = Joi.object().keys(
             location:
             {
                 province: Joi.string().required(),
-                //subDistrict: Joi.string().required(),//!เอาออก
                 district: Joi.string().required(),
-                //zipCode: Joi.string().required(),//!เอาออก
             },
-            receiveVaccine: Joi.string().required(),
+            vaccination: Joi.string().required(),
+            receiveVaccine: Joi.array,
             receiveDate: Joi.string().required(),
             disease: Joi.string().required(),
             neutered: Joi.string().required(),
-            image: Joi.string().required(),
             gender: Joi.string().required(),
+            characteristic: {
+                hair: Joi.string().required(),
+                size: Joi.string().required(),
+                habit: Joi.array,
+                sandbox: Joi.string().required()
+            },
             others: Joi.string().required(),
         },
         contact: {
@@ -46,16 +49,13 @@ const findHomeSchema = Joi.object().keys(
 //--------------------- User ---------------------
 exports.Create = async (req, res, next) => {
     try {
-
         const idUser = req.decoded.id;
         const user = await User.findById(idUser);
-
         if (user) {
             req.body.author = idUser;
             const result = findHomeSchema.validate(req.body);
             const newCreate = new FindHome(result.value);
             await newCreate.save();
-
             const newPost = await FindHome.create(newCreate)
             return res.status(200).json({
                 success: true,
@@ -68,12 +68,10 @@ exports.Create = async (req, res, next) => {
                 message: "No user found",
             });
         }
-
     } catch (error) {
         console.log(error);
         return res.status(500).send(error)
     }
-
 };
 
 exports.GetMyPost = async (req, res) => {
@@ -91,7 +89,6 @@ exports.FindAllPost = async (req, res) => {
         if (getAllPost.length < 1) {
             return res.status(200).json([]);
         }
-
         return res.json(getAllPost);
     } catch (err) {
         return res.status(500).json({
@@ -108,7 +105,6 @@ exports.FindAllLatest = async (req, res) => {
         if (getAllPost.length < 1) {
             return res.status(200).json([]);
         }
-
         return res.json(getAllPost);
     } catch (err) {
         return res.status(500).json({
@@ -125,7 +121,6 @@ exports.FindAlloldPost = async (req, res) => {
         if (getAllPost.length < 1) {
             return res.status(200).json([]);
         }
-
         return res.json(getAllPost);
     } catch (err) {
         return res.status(500).json({
@@ -153,11 +148,7 @@ exports.FindOnePost = async (req, res) => {
 exports.DeletePost = async (req, res) => {
     try {
         const id = req.query.id;
-        //console.log(id);
-
         const post = await FindHome.findById(id)
-        //console.log(post);
-
         const nameImage = post.image.filePath.substr(8);
         console.log(nameImage);
         await fs.unlink(`./uploads/${nameImage}`)
@@ -181,13 +172,11 @@ exports.DeletePost = async (req, res) => {
 
 exports.Update = async (req, res) => {
     try {
-
         if (!req.body) {
             return res.status(400).send({
                 message: "Data to update can not be empty!"
             });
         }
-
         const id = req.query.id;
         const data = await FindHome.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
         if (!data) {
@@ -203,7 +192,6 @@ exports.Update = async (req, res) => {
             message: "Error updating FindHome with id=" + id
         });
     }
-
 };
 
 exports.updateImageFindHome = async (req, res) => {
@@ -223,14 +211,6 @@ exports.updateImageFindHome = async (req, res) => {
             post.image = undefined
             await post.save()
         };
-
-        // const nameImage = post.image.filePath.substr(8);
-        // console.log(nameImage);
-
-        // fs.unlink(`./uploads/${nameImage}`)
-        // post.image = undefined
-        // await post.save()
-
         const data = await FindHome.findByIdAndUpdate(id,
             {
                 image: {
@@ -240,13 +220,11 @@ exports.updateImageFindHome = async (req, res) => {
                     fileSize: fileSizeFormatter(req.file.size, 2)
                 }
             })
-
         if (!data) {
             return res.status(404).send({
                 message: `Cannot update FindHome. Maybe FindHome was not found!`
             });
         }
-
         res.status(201).send({
             message: 'File Uploaded Successfully',
             image: req.file.originalname
@@ -308,7 +286,6 @@ exports.readFileFindHome = async (req, res) => {
         console.log(nameImage);
         const data = await fs.readFile(`./uploads/${nameImage}`);
         return res.end(data);
-
     } catch (error) {
         res.status(400).send(error.message);
     }
@@ -317,9 +294,7 @@ exports.readFileFindHome = async (req, res) => {
 exports.LikePost = async (req, res) => {
     const id = req.decoded.id;
     const Postid = req.query.id;
-
     const findPostByPostid = await FindHome.findById(Postid);
-
     if (findPostByPostid) {
         try {
             // ไปหา favor ของผู้ใช้คนนั้นๆมา
