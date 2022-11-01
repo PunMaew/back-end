@@ -3,29 +3,31 @@ const bcrypt = require("bcryptjs");
 const Schema = mongoose.Schema;
 const userSchema = new Schema(
   {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
-    tel: { type: String, required:false ,default: null},
+    firstName: { type: String, required: true, unique: false },
+    lastName: { type: String, required: true, unique: false },
+    tel: { type: String, required: false, default: null },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, minLength: 6 },
     active: { type: Boolean, default: false },
     role: { type: String, default: "USER" },
-    address: {
-      province: { type: String, required: true ,default: null},
-      district: { type: String, required: false, default:" "},
-      subDistrict: { type: String, required: false, default: " " },
-      zipCode: { type: String, required: true ,default: null},
-    },
+    // address: {
+    //   //province: { type: String, required: true ,default: null}, //!เอาออก
+    //   //district: { type: String, required: false, default:" "}, //!เอาออก
+    //   //subDistrict: { type: String, required: false, default: " " }, //!เอาออก
+    //   //zipCode: { type: String, required: true ,default: null}, //!เอาออก
+    // },
     resetPasswordToken: { type: String, default: null },
     resetPasswordExpires: { type: Date, default: null },
     accessToken: { type: String, default: null }, // JWT token
     emailToken: { type: String, default: null },
     emailTokenExpires: { type: Date, default: null },
-    //idealCat: { type: Array, required: false },
-    idealCat:[{
-      id: {type: mongoose.Schema.Types.ObjectId, require: true},
-      answer : {type: String, require: true}
-  }],
+    idealCat: [{
+      id: { type: mongoose.Schema.Types.ObjectId, require: true },
+      answer: { type: String, require: true }
+    }],
+    favor: [{
+      itemId: { type: mongoose.Types.ObjectId, ref: 'finderHome', required: true }
+    }],
   },
   {
     timestamps: {

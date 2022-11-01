@@ -23,9 +23,9 @@ const findHomeSchema = Joi.object().keys(
             location:
             {
                 province: Joi.string().required(),
-                subDistrict: Joi.string().required(),
+                //subDistrict: Joi.string().required(),//!เอาออก
                 district: Joi.string().required(),
-                zipCode: Joi.string().required(),
+                //zipCode: Joi.string().required(),//!เอาออก
             },
             receiveVaccine: Joi.string().required(),
             receiveDate: Joi.string().required(),
@@ -86,7 +86,7 @@ exports.GetMyPost = async (req, res) => {
 //--------------------- User and Admin ---------------------
 exports.FindAllPost = async (req, res) => {
     const getAllPost = await FindHome.find().populate({
-        path:'authorInfo', select: ['firstName', 'lastName']
+        path: 'authorInfo', select: ['firstName', 'lastName']
     }).exec();
     try {
         if (getAllPost.length < 1) {
@@ -177,7 +177,7 @@ exports.DeletePost = async (req, res) => {
         //console.log(post);
 
         const nameImage = post.image.filePath.substr(8);
-        console.log(nameImage); 
+        console.log(nameImage);
         await fs.unlink(`./uploads/${nameImage}`)
         console.log("1");
         const data = await FindHome.findByIdAndRemove(id)
@@ -224,6 +224,33 @@ exports.Update = async (req, res) => {
 
 };
 
+exports.UpdateStatus = async (req, res) => {
+    try {
+
+        if (!req.body) {
+            return res.status(400).send({
+                message: "Data to update can not be empty!"
+            });
+        }
+
+        const id = req.query.id;
+        const data = await FindHome.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+        if (!data) {
+            return res.status(404).send({
+                message: `Cannot update FindHome with id=${id}. Maybe FindHome was not found!`
+            });
+        } return res.status(200).send({
+            message: "FindHome was updated successfully.",
+            postId: data._id.toString()
+        });
+    } catch (error) {
+        res.status(500).send({
+            message: "Error updating FindHome "
+        });
+    }
+
+};
+
 exports.updateImageFindHome = async (req, res) => {
     try {
         const id = req.query.id;
@@ -241,7 +268,7 @@ exports.updateImageFindHome = async (req, res) => {
             post.image = undefined
             await post.save()
         };
-        
+
         // const nameImage = post.image.filePath.substr(8);
         // console.log(nameImage);
 
@@ -277,11 +304,16 @@ exports.updateImageFindHome = async (req, res) => {
 
 exports.GetMultipleRandom = async (req, res) => {
     const getAllPost = await FindHome.find();
-    if (!getAllPost || getAllPost.length === 0) {
-        return res.status(201).send({
-            message: "No Post Now"
-        });
+    // if (!getAllPost || getAllPost.length === 0) {
+    //     return res.status(201).send({
+    //         message: "No Post Now"
+    //     });
+    // }
+
+    if (getAllPost.length < 1) {
+        return res.status(200).json([]);
     }
+
     function getMultipleRandom(arr, num) {
         const shuffled = [...arr].sort(() => 0.5 - Math.random());
         return shuffled.slice(0, num);
@@ -328,7 +360,7 @@ exports.readFileFindHome = async (req, res) => {
 };
 
 exports.getStausCat = async (req, res) => {
-    const getAllPost = await FindHome.find({ statusbar: {$eq:'รับเลี้ยงแล้ว'}}).populate({
+    const getAllPost = await FindHome.find({ statusbar: { $eq: 'รับเลี้ยงแล้ว' } }).populate({
         path: 'authorInfo', select: ['firstName', 'lastName']
     }).exec();
 
@@ -336,12 +368,13 @@ exports.getStausCat = async (req, res) => {
     console.log(numCount);
     try {
         if (getAllPost.length < 1) {
-            return res.status(200).json([]); //ตอนไม่มีต้องส่งอย่างไร
+            return res.status(200).json([]);
         }
 
         return res.status(200).send({
             success: getAllPost,
-            numCount: numCount});
+            numCount: numCount
+        });
     } catch (err) {
         return res.status(500).json({
             error: "Something went wrong"
@@ -349,8 +382,52 @@ exports.getStausCat = async (req, res) => {
     }
 };
 
+exports.LikePost = async (req, res) => {
+    const id = req.decoded.id;
+    const Postid = req.query.id;
 
+    const findPostByPostid = await FindHome.findById(Postid);
+    if (findPostByPostid) {
+        try {
+            // ไปหา favor ของผู้ใช้คนนั้นๆมา
+            const getFavor = await User.findById(id).select('favor');
 
+            // สร้างตัวแปร truefalse มาเก็บไว้เช็คว่า ที่กดไลค์เข้ามา มันเคยมีแล้วหรือยัง
+            let checkDuplicate = false;
+
+            // ลูปเช็คว่ามีซำ้ไหม ถ้ามีให้ตั้ง true
+            for (let index = 0; index < getFavor.favor.length; index++) {
+                if (Postid == getFavor.favor[index].itemId) {
+                    checkDuplicate = true;
+                }
+            }
+
+            if (checkDuplicate === true) {
+                await User.updateOne({ _id: id }, { $pull: { favor: { itemId: Postid } } })
+                return res.status(200).json({
+                    status: 200,
+                    message: "Unlike สำเร็จ"
+                })
+            } else {
+                await User.updateOne({ _id: id }, { $push: { favor: { itemId: Postid } } })
+                return res.status(200).json({
+                    status: 200,
+                    message: "Like สำเร็จ"
+                })
+            }
+        } catch (error) {
+            console.log(error);
+            res.status(500).send("something went wrong");
+        }
+    } else {
+        return res.status(404).json({
+            status: 404,
+            message: "Post by Post id is not found."
+        })
+    }
+};
+
+//ต้อง get ข้อมูลลูปอาเรย์ทุกตัวให้หวาน
 
 
 

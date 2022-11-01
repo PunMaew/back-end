@@ -9,9 +9,9 @@ const findHomeSchema = new Schema({
         ageRange: { type: String, required: false },
         location: {
             province: { type: String, required: true },
-            subDistrict: { type: String, required: true },
+            //subDistrict: { type: String, required: true }, //!เอาออก
             district: { type: String, required: true },
-            zipCode: { type: String, required: true },
+            //zipCode: { type: String, required: true }, //!เอาออก
         },
         receiveVaccine: { type: String, required: true },
         receiveDate: { type: String, required: false, default: "-" },

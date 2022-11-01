@@ -36,7 +36,7 @@ router.get("/getUserById", cleanBody, AuthController.GetUserById);
 
 router.get("/getUser", validateToken, AuthController.getUser);
 
-//router.get("/getBestmatch", validateToken, AuthController.getBestmatch);
+router.get("/getBestmatch", validateToken, AuthController.getBestmatch);
 
 router.put("/editProfile", cleanBody, AuthController.EditProfile);
 

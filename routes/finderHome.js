@@ -28,6 +28,10 @@ router.delete("/deletePost", cleanBody, FindHomeController.DeletePost);
 
 router.put("/updatePost", cleanBody, FindHomeController.Update);
 
+router.post("/updatePostStatus", cleanBody, FindHomeController.UpdateStatus);
+
+router.post("/likePost", validateToken ,cleanBody, FindHomeController.LikePost);//
+
 router.get("/getMyPost", cleanBody, FindHomeController.GetMyPost);
 
 router.get("/randomPost", cleanBody, FindHomeController.GetMultipleRandom);
