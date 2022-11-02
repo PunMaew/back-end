@@ -13,7 +13,7 @@ const findHomeSchema = new Schema({
         },
         vaccination:{ type: String, required: true },
         receiveVaccine: { type: Array, required: true }, 
-        receiveDate: { type: String, required: false, default: "-" },
+        //receiveDate: { type: String, required: false, default: "-" },
         disease: { type: String, required: false, default: "-" },
         neutered: { type: String, required: true },
         gender: { type: String, required: true },

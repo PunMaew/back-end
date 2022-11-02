@@ -25,7 +25,7 @@ const findHomeSchema = Joi.object().keys(
             },
             vaccination: Joi.string().required(),
             receiveVaccine: Joi.array,
-            receiveDate: Joi.string().required(),
+            //receiveDate: Joi.string().required(),
             disease: Joi.string().required(),
             neutered: Joi.string().required(),
             gender: Joi.string().required(),
