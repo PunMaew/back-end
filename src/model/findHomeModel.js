@@ -26,6 +26,7 @@ const findHomeSchema = new Schema({
         others: { type: String, required: false, default: "-" },
     },
     contact: {
+        terms:{ type: Boolean, default: false },
         contactName: { type: String, required: true },
         tel: { type: String, required: true },
         facebook: { type: String, required: false, default: "-" },
