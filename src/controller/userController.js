@@ -9,30 +9,26 @@ const jwt = require("jsonwebtoken");
 const fs = require('fs/promises')
 
 const userSchema = Joi.object().keys({
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  email: Joi.string().email({
-    minDomainSegments: 2,
-  }),
+  firstName: Joi.string().min(4).max(30).required(),
+  lastName: Joi.string().min(4).max(30).required(),
+  email: Joi.string().email({ minDomainSegments: 2 }),
   password: Joi.string().required().min(6),
   confirmPassword: Joi.string().valid(Joi.ref("password")),
-  address: {
-    province: Joi.string().required(),
-    //zipCode: Joi.string().required(), //!เอาออก
-  },
+});
+
+const emailSchema = Joi.object().keys({
+  email: Joi.string().email({ minDomainSegments: 2 })
 });
 
 const AdminSchema = Joi.object().keys({
-  firstName: Joi.string().required(),
-  lastName: Joi.string().required(),
-  email: Joi.string().email({
-    minDomainSegments: 2,
-  }),
+  firstName: Joi.string().min(4).max(30).required(),
+  lastName: Joi.string().min(4).max(30).required(),
+  email: Joi.string().email({ minDomainSegments: 2 }),
   password: Joi.string().required().min(6),
   confirmPassword: Joi.string().valid(Joi.ref("password")),
 });
 
-//--------------------- User ---------------------
+//?--------------------- User ---------------------
 exports.Login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -191,6 +187,7 @@ exports.Signup = async (req, res) => {
         message: "Couldn't send verification email.",
       });
     }
+
     result.value.emailToken = code;
     result.value.emailTokenExpires = new Date(expiry);
 
@@ -199,6 +196,8 @@ exports.Signup = async (req, res) => {
 
     const newUser = new User(result.value);
     await newUser.save();
+
+
     return res.status(200).json({
       success: true,
       message: "Registration Success",
@@ -298,7 +297,7 @@ exports.ForgotPassword = async (req, res) => {
       return res.send({
         success: true,
         message:
-          "If that email address is in our database, we will send you an email to reset your password",
+          "We will send you an email to reset your password",
       });
     }
     let code = Math.floor(100000 + Math.random() * 900000);
@@ -316,7 +315,7 @@ exports.ForgotPassword = async (req, res) => {
     return res.send({
       success: true,
       message:
-        "If that email address is in our database, we will send you an email to reset your password",
+        "We will send you an email to reset your password",
     });
   } catch (error) {
     console.error("forgot-password-error", error);
@@ -756,7 +755,7 @@ exports.getIdealCat = async (req, res) => {
   const id = req.decoded.id;
   //console.log(id);
   try {
-    const getideal = await User.findById(id).select('idealCat');
+    const getideal = await User.findById(id).select('idealCat.answer');
     return res.status(200).json(getideal);
   } catch (error) {
     console.log(error);
@@ -767,23 +766,228 @@ exports.getIdealCat = async (req, res) => {
 exports.getBestmatch = async (req, res) => {
   const id = req.decoded.id;
   const idealCat = await User.findById(id).select('idealCat');
-  console.log(idealCat.idealCat[2].answer)
-  //console.log(idealCat);
   const getData = await FindHome.find({
     $or: [
       { "generalInfo.age": idealCat.idealCat[0].answer },
-      //{ "generalInfo.gender": idealCat.idealCat[1].answer }, //ขนสั้น
+      { "generalInfo.characteristic.hair": idealCat.idealCat[1].answer }, //ขนสั้น
       { "generalInfo.gender": idealCat.idealCat[2].answer },
-      //{ "generalInfo.gender": idealCat.idealCat[3].answer }, //สีแมว
+      { "generalInfo.color": idealCat.idealCat[3].answer }, //สีแมว
       { "generalInfo.location.province": idealCat.idealCat[4].answer },
       { "generalInfo.location.district": idealCat.idealCat[5].answer },
       { "generalInfo.breeds": idealCat.idealCat[6].answer },
-      //{ "generalInfo.breeds": idealCat.idealCat[7].answer }, //กะบะทราย
+      { "generalInfo.characteristic.sandbox": idealCat.idealCat[7].answer }, //กะบะทราย
       { "generalInfo.neutered": idealCat.idealCat[8].answer },
-      //{ "generalInfo.breeds": idealCat.idealCat[9].answer }, //รับวัคซีน
-      {}]
+      { "generalInfo.vaccination": idealCat.idealCat[9].answer }, //รับวัคซีน
+    ]
   });
-
-  console.log(getData);
+  return res.status(200).json(getData);
 
 };
+
+//!เปลียนรหัสผ่าน
+exports.resetEmail = async (req, res) => {
+  const id = req.decoded.id;
+  const getEmail = await User.findById(id).select('email');
+
+  let code = Math.floor(100000 + Math.random() * 900000);
+  let expiry = Date.now() + 60 * 1000 * 15;
+
+  const sendCode = await sendEmail(getEmail.email, code);
+  if (sendCode.error) {
+    return res.status(500).json({
+      error: true,
+      message: "Couldn't send verification email.",
+    });
+  }
+
+  const data = await User.findByIdAndUpdate(id,
+    {
+      emailResetToken: code,
+      emailResetTokenExpires: expiry
+    })
+  if (!data) {
+    return res.status(404).send({
+      message: `There is no user data in the database.`
+    });
+  }
+  res.status(201).send({
+    message: 'The OTP code has been sent to your registered email address. Please bring the code to verify your identity.',
+  });
+
+};
+
+//!verify email
+exports.verifyIdentityEmail = async (req, res) => {
+  try {
+    // const id = req.decoded.id;
+    // const {getEmail} = await User.findById(id).select('email');
+    const { email, code } = req.body;
+    if (!email || !code) {
+      return res.json({
+        error: true,
+        status: 400,
+        message: "Please make a valid request",
+      });
+    }
+    const user = await User.findOne({
+      email: email,
+      emailResetToken: code,
+      emailResetTokenExpires: {
+        $gt: Date.now(),
+      }, // check if the code is expired
+    });
+    if (!user) {
+      return res.status(400).json({
+        error: true,
+        message: "Invalid details",
+      });
+    } else {
+
+      user.emailResetToken = "";
+      user.emailResetTokenExpires = null;
+      await user.save();
+      return res.status(200).json({
+        success: true,
+        message: "Account reset email.",
+      });
+    }
+  } catch (error) {
+    console.error("activation-error", error);
+    return res.status(500).json({
+      error: true,
+      message: error.message,
+    });
+  }
+};
+
+//!เปลี่ยนอีเมลโดยห้ามซ้ำกับที่มีอยู่
+exports.editEmail = async (req, res) => {
+  const id = req.decoded.id;
+  const result = emailSchema.validate(req.body);
+  try {
+    if (result.error) {
+      console.log(result.error.message);
+      return res.status(400).json({
+        error: true,
+        status: 400,
+        message: result.error.message,
+      });
+    }
+    var user = await User.findOne({
+      email: result.value.email,
+    });
+    if (user) {
+      return res.status(401).json({
+        error: true,
+        message: "Email is already in use",
+      });
+    } else {
+      await User.findByIdAndUpdate(id,
+        {
+          email: result.value.email,
+        })
+      return res.status(200).json({
+        success: true,
+        message: "Update Success",
+      });
+    }
+  } catch (error) {
+
+    return res.status(500).json({
+      error: true,
+      message: "Cannot Update",
+    });
+  }
+
+
+};
+
+//!Logintest เวลา active  
+exports.Logintest = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        error: true,
+        message: "Cannot authorize user.",
+      });
+    }
+    //1. Find if any account with that email exists in DB
+    const user = await User.findOne({
+      email: email,
+    });
+    // NOT FOUND - Throw error
+    if (!user) {
+      return res.status(404).json({
+        error: true,
+        message: "Account not found",
+      });
+    }
+    //2. Throw error if account is not activated
+    if (!user.active) {
+      const result = await User.findOne({ email: req.body.email });
+  //console.log(result.email);
+      let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
+      let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
+      const sendCode = await sendEmail(result.email, code);
+      if (sendCode.error) {
+        return res.status(500).json({
+          error: true,
+          message: "Couldn't send verification email.",
+        });
+      }
+  
+      result.emailToken = code;
+      result.emailTokenExpires = new Date(expiry);
+  
+      const newAgainOTP = new User(result);
+      await newAgainOTP.save();
+
+      return res.status(400).json({
+        error: true,
+        message: "You must verify your email to activate your account",
+        active: user.active
+      });
+    }
+    //3. Verify the password is valid
+    const isValid = await bcrypt.compare(req.body.password, user.password);
+    if (!isValid) {
+      return res.status(400).json({
+        error: true,
+        message: "Invalid Email or Password.",
+      });
+    }
+
+    //Generate Access token
+    const { error, token } = await generateJwt(user.email, user._id);
+    if (error) {
+      return res.status(500).json({
+        error: true,
+        message: "Couldn't create access token. Please try again later",
+      });
+    }
+    const user_body = await User.findOne({
+      email: req.body.email,
+    });
+
+    user.accessToken = token;
+    user.bodyUser = user_body;
+
+    await user.save();
+
+    //Success
+    return res.send({
+      success: true,
+      message: "User logged in successfully",
+      accessToken: token, //Send it to the client
+      bodyUser: user_body,
+    });
+  } catch (err) {
+    console.error("Login error", err);
+    return res.status(500).json({
+      error: true,
+      message: "Couldn't login. Please try again later.",
+    });
+  }
+};
+

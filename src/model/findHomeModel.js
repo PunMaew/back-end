@@ -6,22 +6,27 @@ const findHomeSchema = new Schema({
         color: { type: String, required: true },
         breeds: { type: String, required: false, default: "-" },
         age: { type: String, required: false, default: "-" },
-        ageRange: { type: String, required: false },
+        ageRange: { type: String, required: false }, 
         location: {
             province: { type: String, required: true },
-            //subDistrict: { type: String, required: true }, //!เอาออก
             district: { type: String, required: true },
-            //zipCode: { type: String, required: true }, //!เอาออก
         },
-        receiveVaccine: { type: String, required: true },
-        receiveDate: { type: String, required: false, default: "-" },
+        vaccination:{ type: String, required: true },
+        receiveVaccine: { type: Array, required: true }, 
+        //receiveDate: { type: String, required: false, default: "-" },
         disease: { type: String, required: false, default: "-" },
         neutered: { type: String, required: true },
         gender: { type: String, required: true },
-        characteristic: { type: Array, required: true },
+        characteristic:{
+            hair: { type: String, required: false },
+            size: { type: String, required: false },
+            habit: { type: Array, required: false }, 
+            sandbox: { type: String, required: false },
+        },
         others: { type: String, required: false, default: "-" },
     },
     contact: {
+        terms:{ type: Boolean, default: false },
         contactName: { type: String, required: true },
         tel: { type: String, required: true },
         facebook: { type: String, required: false, default: "-" },
@@ -54,14 +59,12 @@ const findHomeSchema = new Schema({
         versionKey: false
     }
 );
-
 findHomeSchema.virtual('authorInfo', {
     ref: "user", //data
     localField: 'author',
     foreignField: '_id',
     justOne: true
 })
-
 
 mongoose.pluralize(null);
 const FindHome = mongoose.model("finderHome", findHomeSchema);

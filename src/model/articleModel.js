@@ -10,7 +10,7 @@ const articleSchema = new Schema({
     authorAdmin:
     {
         type: mongoose.Types.ObjectId,
-        ref: "user",
+        ref: "admin",
     },
     image: {
         fileName: {
@@ -38,7 +38,6 @@ const articleSchema = new Schema({
         versionKey: false
     }
 );
-
 articleSchema.virtual('authorAdminInfo', {
     //ref: "user", //data
     ref: "admin", //data
