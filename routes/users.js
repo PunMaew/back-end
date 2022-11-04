@@ -22,7 +22,7 @@ router.patch("/activate", cleanBody, AuthController.Activate);
 
 router.patch("/activateAdmin", cleanBody, AuthController.ActivateAdmin);
 
-router.patch("/verify", cleanBody, AuthController.verifyIdentityEmail); //
+router.patch("/verify", cleanBody, AuthController.verifyIdentityEmail); 
 
 router.patch("/forgot", cleanBody, AuthController.ForgotPassword);
 
