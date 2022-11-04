@@ -991,3 +991,23 @@ exports.Logintest = async (req, res) => {
   }
 };
 
+//!Get Admin
+exports.getAdmin = async (req, res) => {
+  const id = req.decoded.id;
+  const result = await Admin.findById(id).select([
+    'firstName','lastName','tel','email','role']);
+
+    try {
+      if (!result) {
+        return res.status(404).json({
+          error: "Admin not found",
+        });
+      }
+      return res.json(result);
+    } catch (err) {
+      return res.status(500).json({
+        error: "Something went wrong",
+      });
+    }
+};
+
