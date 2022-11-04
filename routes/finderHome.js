@@ -37,9 +37,6 @@ router.get("/randomPost", cleanBody, FindHomeController.GetMultipleRandom);
 
 router.get("/getLikePost", validateToken,cleanBody, FindHomeController.getLikePost); 
 
-router.get("/getBestmatch", validateToken,cleanBody, FindHomeController.getBestmatch); 
-
-
 //? DELETE Request
 router.delete("/deletePost", cleanBody, FindHomeController.DeletePost);
 
