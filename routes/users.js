@@ -10,7 +10,10 @@ router.post("/signup", cleanBody, AuthController.Signup);
 
 router.post("/signupAdmin", cleanBody, AuthController.SignupAdmin);
 
-router.post("/login", cleanBody, AuthController.Login);
+router.post("/login", cleanBody, AuthController.Logintest); //*ของใหม่
+
+router.post("/logintest", cleanBody, AuthController.Login); //!ของเก่า
+
 
 router.post("/loginAdmin", cleanBody, AuthController.LoginAdminPunmeaw);
 
@@ -18,6 +21,8 @@ router.post("/loginAdmin", cleanBody, AuthController.LoginAdminPunmeaw);
 router.patch("/activate", cleanBody, AuthController.Activate);
 
 router.patch("/activateAdmin", cleanBody, AuthController.ActivateAdmin);
+
+router.patch("/verify", cleanBody, AuthController.verifyIdentityEmail); //
 
 router.patch("/forgot", cleanBody, AuthController.ForgotPassword);
 
@@ -49,9 +54,11 @@ router.put("/againOTP", cleanBody, AuthController.AgainOTPSignup);
 
 router.put("/idealCat", validateToken, AuthController.IdealCat);
 
+router.put("/resetEmail", validateToken, AuthController.resetEmail);
+
+router.put("/editEmail", validateToken, AuthController.editEmail);
+
 //? DELETE Request
 router.delete("/deleteUser", cleanBody, AuthController.DeleteUser);
-
-
 
 module.exports = router;

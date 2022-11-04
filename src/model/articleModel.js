@@ -10,7 +10,7 @@ const articleSchema = new Schema({
     authorAdmin:
     {
         type: mongoose.Types.ObjectId,
-        ref: "user",
+        ref: "admin",
     },
     image: {
         fileName: {

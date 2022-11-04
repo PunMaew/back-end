@@ -3,8 +3,8 @@ const bcrypt = require("bcryptjs");
 const Schema = mongoose.Schema;
 const userSchema = new Schema(
   {
-    firstName: { type: String, required: true, unique: false },
-    lastName: { type: String, required: true, unique: false },
+    firstName: { type: String, required: true, unique: false ,minLength:3 ,maxlength:30},
+    lastName: { type: String, required: true, unique: false ,minLength:3 ,maxlength: 30},
     tel: { type: String, required: false, default: null },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minLength: 6 },
@@ -15,6 +15,8 @@ const userSchema = new Schema(
     accessToken: { type: String, default: null },
     emailToken: { type: String, default: null },
     emailTokenExpires: { type: Date, default: null },
+    emailResetToken: { type: String, default: null }, 
+    emailResetTokenExpires: { type: Date, default: null }, 
     idealCat: [{
       id: { type: mongoose.Schema.Types.ObjectId, require: true },
       answer: { type: String, require: true }
