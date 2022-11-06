@@ -47,6 +47,8 @@ router.get("/getBestmatch", validateToken, AuthController.getBestmatch);
 
 router.get("/getIdealCat", validateToken, AuthController.getIdealCat);
 
+router.get("/getAdmin", validateTokenAdmin, AuthController.getAdmin);
+
 //? PUT Request
 router.put("/editProfile", cleanBody, AuthController.EditProfile);
 
