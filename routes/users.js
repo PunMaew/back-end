@@ -12,7 +12,7 @@ router.post("/signupAdmin", cleanBody, AuthController.SignupAdmin);
 
 router.post("/login", cleanBody, AuthController.Logintest); //*ของใหม่
 
-router.post("/logintest", cleanBody, AuthController.Login); //!ของเก่า
+//router.post("/logintest", cleanBody, AuthController.Login); //!ของเก่า
 
 
 router.post("/loginAdmin", cleanBody, AuthController.LoginAdminPunmeaw);
@@ -44,6 +44,8 @@ router.get("/getUserById", cleanBody, AuthController.GetUserById);
 router.get("/getUser", validateToken, AuthController.getUser);
 
 router.get("/getBestmatch", validateToken, AuthController.getBestmatch);
+
+router.get("/orBest", validateToken, AuthController.orBestmatch);
 
 router.get("/getIdealCat", validateToken, AuthController.getIdealCat);
 

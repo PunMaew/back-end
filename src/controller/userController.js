@@ -763,28 +763,40 @@ exports.getIdealCat = async (req, res) => {
 
 };
 
+//!รอtest หน้าบ้าน
 exports.getBestmatch = async (req, res) => {
   const id = req.decoded.id;
   const idealCat = await User.findById(id).select('idealCat');
+  console.log(idealCat);
   const getData = await FindHome.find({
-    $or: [
-      { "generalInfo.age": idealCat.idealCat[0].answer },
-      { "generalInfo.characteristic.hair": idealCat.idealCat[1].answer }, //ขนสั้น
-      { "generalInfo.gender": idealCat.idealCat[2].answer },
-      { "generalInfo.color": idealCat.idealCat[3].answer }, //สีแมว
-      { "generalInfo.location.province": idealCat.idealCat[4].answer },
-      { "generalInfo.location.district": idealCat.idealCat[5].answer },
-      { "generalInfo.breeds": idealCat.idealCat[6].answer },
-      { "generalInfo.characteristic.sandbox": idealCat.idealCat[7].answer }, //กะบะทราย
-      { "generalInfo.neutered": idealCat.idealCat[8].answer },
-      { "generalInfo.vaccination": idealCat.idealCat[9].answer }, //รับวัคซีน
+    $and: [
+      { "generalInfo.characteristic.hair": idealCat.idealCat[0].answer }, //*ขนสั้น
+      { "generalInfo.neutered": idealCat.idealCat[1].answer }, //*การทำหมัน
+      { "generalInfo.characteristic.sandbox": idealCat.idealCat[2].answer }, //*กะบะทราย
+      { "generalInfo.vaccination": idealCat.idealCat[3].answer }, //*รับวัคซีน
     ]
   });
   return res.status(200).json(getData);
 
 };
 
-//!เปลียนรหัสผ่าน
+//!รอtest หน้าบ้าน
+exports.orBestmatch = async (req, res) => {
+  const id = req.decoded.id;
+  const idealCat = await User.findById(id).select('idealCat');
+  const getData = await FindHome.find({
+    $or: [
+      { "generalInfo.characteristic.hair": idealCat.idealCat[0].answer }, //*ขนสั้น
+      { "generalInfo.neutered": idealCat.idealCat[1].answer }, //*การทำหมัน
+      { "generalInfo.characteristic.sandbox": idealCat.idealCat[2].answer }, //*กะบะทราย
+      { "generalInfo.vaccination": idealCat.idealCat[3].answer }, //*รับวัคซีน
+    ]
+  });
+  return res.status(200).json(getData);
+};
+
+
+//!เปลียนรหัสผ่าน //!รอtest หน้าบ้าน
 exports.resetEmail = async (req, res) => {
   const id = req.decoded.id;
   const getEmail = await User.findById(id).select('email');
@@ -816,7 +828,7 @@ exports.resetEmail = async (req, res) => {
 
 };
 
-//!verify email
+//!verify email //!รอtest หน้าบ้าน
 exports.verifyIdentityEmail = async (req, res) => {
   try {
     // const id = req.decoded.id;
@@ -860,7 +872,7 @@ exports.verifyIdentityEmail = async (req, res) => {
   }
 };
 
-//!เปลี่ยนอีเมลโดยห้ามซ้ำกับที่มีอยู่
+//!เปลี่ยนอีเมลโดยห้ามซ้ำกับที่มีอยู่ //!รอtest หน้าบ้าน
 exports.editEmail = async (req, res) => {
   const id = req.decoded.id;
   const result = emailSchema.validate(req.body);
@@ -926,7 +938,7 @@ exports.Logintest = async (req, res) => {
     //2. Throw error if account is not activated
     if (!user.active) {
       const result = await User.findOne({ email: req.body.email });
-  //console.log(result.email);
+      //console.log(result.email);
       let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
       let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
       const sendCode = await sendEmail(result.email, code);
@@ -936,10 +948,10 @@ exports.Logintest = async (req, res) => {
           message: "Couldn't send verification email.",
         });
       }
-  
+
       result.emailToken = code;
       result.emailTokenExpires = new Date(expiry);
-  
+
       const newAgainOTP = new User(result);
       await newAgainOTP.save();
 
@@ -995,19 +1007,18 @@ exports.Logintest = async (req, res) => {
 exports.getAdmin = async (req, res) => {
   const id = req.decoded.id;
   const result = await Admin.findById(id).select([
-    'firstName','lastName','tel','email','role']);
+    'firstName', 'lastName', 'tel', 'email', 'role']);
 
-    try {
-      if (!result) {
-        return res.status(404).json({
-          error: "Admin not found",
-        });
-      }
-      return res.json(result);
-    } catch (err) {
-      return res.status(500).json({
-        error: "Something went wrong",
+  try {
+    if (!result) {
+      return res.status(404).json({
+        error: "Admin not found",
       });
     }
+    return res.json(result);
+  } catch (err) {
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
 };
-
