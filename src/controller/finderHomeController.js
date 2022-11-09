@@ -335,7 +335,6 @@ exports.LikePost = async (req, res) => {
     }
 };
 
-//*สำเร็จ 
 exports.getLikePost = async (req, res) => {
     const id = req.decoded.id;
     try {
@@ -361,8 +360,6 @@ exports.getLikePost = async (req, res) => {
     }
 };
 
-//*สำเร็จ 
-//เมื่อ User กดปุ่มเปลี่ยน status จากยังไม่ถูกรับเลี้ยงจะเป็นเป็นถูกรับเลี้ยง
 exports.changeStatus = async (req, res) => {
     const id = req.query.postID//id post ที่จะเปลี่ยน status
     const findPost = await FindHome.findById(id); //เอา id ไปดึงหาข้อมูลมี post ไหม
@@ -374,8 +371,6 @@ exports.changeStatus = async (req, res) => {
     }
 };
 
-//*สำเร็จ 
-//เมื่อ User กดปุ่ม filter แมวที่ได้รับเลี้ยงแล้ว 
 exports.getAdopt = async (req, res) => {
     const getAllPost = await FindHome.find({ statusbar: { $eq: 'รับเลี้ยงสำเร็จ' } }).populate({
         path: 'authorInfo', select: ['firstName', 'lastName']
@@ -400,8 +395,6 @@ exports.getAdopt = async (req, res) => {
 
 };
 
-//*สำเร็จ 
-// เมื่อ User กดปุ่ม filter แมวที่ยังไม่ได้รับเลี้ยงแล้ว 
 exports.getNotAdopt = async (req, res) => {
     const getAllPost = await FindHome.find({ statusbar: { $eq: 'ยังไม่ถูกรับเลี้ยง' } }).populate({
         path: 'authorInfo', select: ['firstName', 'lastName']
