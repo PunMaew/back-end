@@ -13,7 +13,6 @@ const findHomeSchema = new Schema({
         },
         vaccination:{ type: String, required: true },
         receiveVaccine: { type: Array, required: true }, 
-        //receiveDate: { type: String, required: false, default: "-" },
         disease: { type: String, required: false, default: "-" },
         neutered: { type: String, required: true },
         gender: { type: String, required: true },
@@ -60,7 +59,7 @@ const findHomeSchema = new Schema({
     }
 );
 findHomeSchema.virtual('authorInfo', {
-    ref: "user", //data
+    ref: "user", 
     localField: 'author',
     foreignField: '_id',
     justOne: true
