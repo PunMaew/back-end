@@ -7,6 +7,7 @@ const articleSchema = new Schema({
         paraNumber : {type: String , require: true},
         text : {type: String, require: true}
     }],
+    source:{ type: String, required: false },
     authorAdmin:
     {
         type: mongoose.Types.ObjectId,
