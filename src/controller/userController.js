@@ -958,7 +958,8 @@ exports.Logintest = async (req, res) => {
       return res.status(400).json({
         error: true,
         message: "You must verify your email to activate your account",
-        active: user.active
+        active: user.active,
+        id: user.id,
       });
     }
     //3. Verify the password is valid
