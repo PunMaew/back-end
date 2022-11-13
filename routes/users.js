@@ -56,6 +56,8 @@ router.put("/editProfile", cleanBody, AuthController.EditProfile);
 
 router.put("/againOTP", cleanBody, AuthController.AgainOTPSignup);
 
+router.put("/againOTPEmail", cleanBody, AuthController.AgainOTPEmail);
+
 router.put("/idealCat", validateToken, AuthController.IdealCat);
 
 router.put("/resetEmail", validateToken, AuthController.resetEmail);

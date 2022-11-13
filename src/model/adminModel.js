@@ -11,7 +11,7 @@ const adminSchema = new Schema(
         active: { type: Boolean, default: false },
         resetPasswordToken: { type: String, default: null },
         resetPasswordExpires: { type: Date, default: null },
-        accessToken: { type: String, default: null }, // JWT token
+        accessToken: { type: String, default: null },
         emailToken: { type: String, default: null },
         emailTokenExpires: { type: Date, default: null },
 
@@ -31,7 +31,7 @@ module.exports = Admin;
 
 module.exports.hashPassword = async (password) => {
     try {
-        const salt = await bcrypt.genSalt(10); // 10 rounds
+        const salt = await bcrypt.genSalt(10);
         return await bcrypt.hash(password, salt);
     } catch (error) {
         throw new Error("Hashing failed", error);

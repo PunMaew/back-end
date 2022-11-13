@@ -958,7 +958,8 @@ exports.Logintest = async (req, res) => {
       return res.status(400).json({
         error: true,
         message: "You must verify your email to activate your account",
-        active: user.active
+        active: user.active,
+        _id: user.id,
       });
     }
     //3. Verify the password is valid
@@ -1022,3 +1023,38 @@ exports.getAdmin = async (req, res) => {
     });
   }
 };
+
+//!Put 
+exports.AgainOTPEmail = async (req, res) => {
+  const id = req.query.id;
+  const data = await User.findById(id);
+  try {
+    const result = userSchema.validate(data);
+    var user = await User.findOne({
+      email: result.value.email,
+    });
+    let code = Math.floor(100000 + Math.random() * 900000); 
+    let expiry = Date.now() + 60 * 1000 * 15; 
+    const sendCode = await sendEmail(result.value.email, code);
+    if (sendCode.error) {
+      return res.status(500).json({
+        error: true,
+        message: "Couldn't send verification email.",
+      });
+    }
+    result.value.emailResetToken = code;
+    result.value.emailResetTokenExpires = new Date(expiry);
+    const newUser = new User(result.value);
+    await newUser.save();
+    return res.status(200).json({
+      success: true,
+      message: "Send OTP Success",
+    });
+  } catch (error) {
+    console.error("signup-error", error);
+    return res.status(500).json({
+      error: true,
+      message: "Cannot Register",
+    });
+  }
+}
