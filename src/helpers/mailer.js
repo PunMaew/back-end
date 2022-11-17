@@ -9,7 +9,6 @@ async function sendEmail(email, code) {
     const smtpUsername = 'apikey';
     const smtpPassword = process.env.SG_APIKEY;
     var subject = "Verify your email";
-    // The body of the email for recipients
     var body_html =       `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
     <html data-editor-version="2" class="sg-campaigns" xmlns="http://www.w3.org/1999/xhtml">
         <head>
@@ -185,7 +184,6 @@ async function sendEmail(email, code) {
         }
     });
 
-    // Specify the fields in the email.
     let mailOptions = {
       from: senderAddress,
       to: toAddress,

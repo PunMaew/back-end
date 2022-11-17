@@ -5,19 +5,15 @@ const { validateToken } = require("../middlewares/validateToken");
 const { validateTokenAdmin } = require("../middlewares/validateTokenAdmin");
 const AuthController = require("../src/controller/userController");
 
-//? POST Request
+
 router.post("/signup", cleanBody, AuthController.Signup); 
 
 router.post("/signupAdmin", cleanBody, AuthController.SignupAdmin);
 
-router.post("/login", cleanBody, AuthController.Logintest); //*ของใหม่
-
-//router.post("/logintest", cleanBody, AuthController.Login); //!ของเก่า
-
+router.post("/login", cleanBody, AuthController.Login); 
 
 router.post("/loginAdmin", cleanBody, AuthController.LoginAdminPunmeaw);
 
-//? PATCH Request
 router.patch("/activate", cleanBody, AuthController.Activate);
 
 router.patch("/activateAdmin", cleanBody, AuthController.ActivateAdmin);
@@ -30,7 +26,6 @@ router.patch("/resetotp", cleanBody, AuthController.ResetOtp);
 
 router.patch("/newpassword", cleanBody, AuthController.ResetPassword);
 
-//? GET Request
 router.get("/logout", validateToken, AuthController.Logout);
 
 router.get("/logoutAdmin", validateTokenAdmin, AuthController.LogoutAdmin); 
@@ -45,13 +40,10 @@ router.get("/getUser", validateToken, AuthController.getUser);
 
 router.get("/getBestmatch", validateToken, AuthController.getBestmatch);
 
-router.get("/orBest", validateToken, AuthController.orBestmatch);
-
 router.get("/getIdealCat", validateToken, AuthController.getIdealCat);
 
 router.get("/getAdmin", validateTokenAdmin, AuthController.getAdmin);
 
-//? PUT Request
 router.put("/editProfile", cleanBody, AuthController.EditProfile);
 
 router.put("/againOTP", cleanBody, AuthController.AgainOTPSignup);
@@ -64,7 +56,6 @@ router.put("/resetEmail", validateToken, AuthController.resetEmail);
 
 router.put("/editEmail", validateToken, AuthController.editEmail);
 
-//? DELETE Request
 router.delete("/deleteUser", cleanBody, AuthController.DeleteUser);
 
 module.exports = router;

@@ -5,7 +5,6 @@ const { validateToken } = require("../middlewares/validateToken");
 const {upload} = require("../src/helpers/filehelper");
 const FindHomeController = require("../src/controller/finderHomeController");
 
-//? POST Request
 router.post("/create", validateToken , FindHomeController.Create);
 
 router.post("/singleUpload/:postId", upload.single('image') , FindHomeController.Singleupload);
@@ -14,7 +13,6 @@ router.post("/updateImage", upload.single('image') , FindHomeController.updateIm
 
 router.post("/likePost", validateToken ,cleanBody, FindHomeController.LikePost); 
 
-//? GET Request
 router.get("/allPost", cleanBody, FindHomeController.FindAllPost);
 
 router.get("/latestPost", cleanBody, FindHomeController.FindAllLatest);
@@ -37,10 +35,8 @@ router.get("/randomPost", cleanBody, FindHomeController.GetMultipleRandom);
 
 router.get("/getLikePost", validateToken,cleanBody, FindHomeController.getLikePost); 
 
-//? DELETE Request
 router.delete("/deletePost", cleanBody, FindHomeController.DeletePost);
 
-//? PUT Request
 router.put("/updatePost", cleanBody, FindHomeController.Update);
 
 router.put("/updatePostStatus", cleanBody, FindHomeController.changeStatus);

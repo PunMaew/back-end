@@ -11,11 +11,10 @@ async function validateTokenAdmin(req, res, next) {
       message: "Access token is missing",
     });
 
-  const token = req.headers.authorization.split(" ")[1]; // Bearer <token>
+  const token = req.headers.authorization.split(" ")[1]; 
   const options = {
     expiresIn: "1h",
   };
-
   try {
     let user = await Admin.findOne({
       accessToken: token,
@@ -42,8 +41,7 @@ async function validateTokenAdmin(req, res, next) {
 
     result["referralCode"] = user.referralCode;
 
-    req.decoded = result;  // append the result in the "decoded" field of req
-    //console.log(req.decoded);
+    req.decoded = result;  
 
     next();
   } catch (err) {
@@ -63,6 +61,5 @@ async function validateTokenAdmin(req, res, next) {
   }
 
 };
-
 
 module.exports = { validateTokenAdmin } ;
