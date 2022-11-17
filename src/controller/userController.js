@@ -28,76 +28,6 @@ const AdminSchema = Joi.object().keys({
   confirmPassword: Joi.string().valid(Joi.ref("password")),
 });
 
-//?--------------------- User ---------------------
-exports.Login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).json({
-        error: true,
-        message: "Cannot authorize user.",
-      });
-    }
-    //1. Find if any account with that email exists in DB
-    const user = await User.findOne({
-      email: email,
-    });
-    // NOT FOUND - Throw error
-    if (!user) {
-      return res.status(404).json({
-        error: true,
-        message: "Account not found",
-      });
-    }
-    //2. Throw error if account is not activated
-    if (!user.active) {
-      return res.status(400).json({
-        error: true,
-        message: "You must verify your email to activate your account",
-      });
-    }
-    //3. Verify the password is valid
-    const isValid = await bcrypt.compare(req.body.password, user.password);
-    if (!isValid) {
-      return res.status(400).json({
-        error: true,
-        message: "Invalid Email or Password.",
-      });
-    }
-
-    //Generate Access token
-    const { error, token } = await generateJwt(user.email, user._id);
-    if (error) {
-      return res.status(500).json({
-        error: true,
-        message: "Couldn't create access token. Please try again later",
-      });
-    }
-    const user_body = await User.findOne({
-      email: req.body.email,
-    });
-
-    user.accessToken = token;
-    user.bodyUser = user_body;
-
-    await user.save();
-
-    //Success
-    return res.send({
-      success: true,
-      message: "User logged in successfully",
-      accessToken: token, //Send it to the client
-      bodyUser: user_body,
-    });
-  } catch (err) {
-    console.error("Login error", err);
-    return res.status(500).json({
-      error: true,
-      message: "Couldn't login. Please try again later.",
-    });
-  }
-};
-
 exports.EditProfile = async (req, res) => {
   if (!req.body) {
     return res.status(400).send({
@@ -124,7 +54,7 @@ exports.EditProfile = async (req, res) => {
 exports.IdealCat = async (req, res) => {
   if (!req.body) {
     return res.status(400).send({
-      message: "Data to update can not be empty!"
+      message: "Data can not be empty!"
     });
   }
 
@@ -134,18 +64,17 @@ exports.IdealCat = async (req, res) => {
     .then(data => {
       if (!data) {
         res.status(404).send({
-          message: `Cannot update User with id=${id}. Maybe User was not found!`
+          message: `Cannot update user with id=${id}. Maybe User was not found!`
         });
-      } else res.status(200).send({ message: "User was updated successfully." });
+      } else res.status(200).send({ message: "ideal cat information was updated successfully." });
     })
     .catch(err => {
       res.status(500).send({
-        message: "Error updating FindHome with id=" + id
+        message: "Error updating ideal cat with user id=" + id
       });
     });
 };
 
-//--------------------- User and Admin ---------------------
 exports.Signup = async (req, res) => {
   try {
     const result = userSchema.validate(req.body);
@@ -157,7 +86,7 @@ exports.Signup = async (req, res) => {
         message: result.error.message,
       });
     }
-    //Check if the email has been already registered.
+
     var user = await User.findOne({
       email: result.value.email,
     });
@@ -175,11 +104,11 @@ exports.Signup = async (req, res) => {
     }
     const hash = await User.hashPassword(result.value.password);
 
-    // remove the confirmPassword field from the result as we dont need to save this in the db.
+
     delete result.value.confirmPassword;
     result.value.password = hash;
-    let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
-    let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
+    let code = Math.floor(100000 + Math.random() * 900000);
+    let expiry = Date.now() + 60 * 1000 * 15;
     const sendCode = await sendEmail(result.value.email, code);
     if (sendCode.error) {
       return res.status(500).json({
@@ -248,7 +177,7 @@ exports.Activate = async (req, res) => {
       emailToken: code,
       emailTokenExpires: {
         $gt: Date.now(),
-      }, // check if the code is expired
+      },
     });
     if (!user) {
       return res.status(400).json({
@@ -310,7 +239,7 @@ exports.ForgotPassword = async (req, res) => {
     }
     let expiry = Date.now() + 60 * 1000 * 15;
     user.resetPasswordToken = code;
-    user.resetPasswordExpires = expiry; // 15 minutes
+    user.resetPasswordExpires = expiry;
     await user.save();
     return res.send({
       success: true,
@@ -415,13 +344,11 @@ exports.AgainOTPSignup = async (req, res) => {
   const data = await User.findById(id);
   try {
     const result = userSchema.validate(data);
-    //console.log(result);
     var user = await User.findOne({
       email: result.value.email,
     });
-    //console.log(user);
-    let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
-    let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
+    let code = Math.floor(100000 + Math.random() * 900000);
+    let expiry = Date.now() + 60 * 1000 * 15;
     const sendCode = await sendEmail(result.value.email, code);
     if (sendCode.error) {
       return res.status(500).json({
@@ -446,7 +373,6 @@ exports.AgainOTPSignup = async (req, res) => {
   }
 }
 
-//--------------------- Admin ---------------------
 exports.SignupAdmin = async (req, res) => {
   try {
     const result = AdminSchema.validate(req.body);
@@ -458,7 +384,7 @@ exports.SignupAdmin = async (req, res) => {
         message: result.error.message,
       });
     }
-    //Check if the email has been already registered.
+
     var user = await Admin.findOne({
       email: result.value.email,
     });
@@ -470,11 +396,10 @@ exports.SignupAdmin = async (req, res) => {
     }
     const hash = await Admin.hashPassword(result.value.password);
 
-    //    remove the confirmPassword field from the result as we dont need to save this in the db.
     delete result.value.confirmPassword;
     result.value.password = hash;
-    let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
-    let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
+    let code = Math.floor(100000 + Math.random() * 900000);
+    let expiry = Date.now() + 60 * 1000 * 15;
     const sendCode = await sendEmail(result.value.email, code);
     if (sendCode.error) {
       return res.status(500).json({
@@ -519,7 +444,7 @@ exports.ActivateAdmin = async (req, res) => {
       emailToken: code,
       emailTokenExpires: {
         $gt: Date.now(),
-      }, // check if the code is expired
+      },
     });
     if (!user) {
       return res.status(400).json({
@@ -560,25 +485,25 @@ exports.LoginAdminPunmeaw = async (req, res) => {
         message: "Cannot authorize user.",
       });
     }
-    //1. Find if any account with that email exists in DB
+
     const user = await Admin.findOne({
       email: email,
     });
-    // NOT FOUND - Throw error
+
     if (!user) {
       return res.status(404).json({
         error: true,
         message: "Account not found",
       });
     }
-    //2. Throw error if account is not activated
+
     if (!user.active) {
       return res.status(400).json({
         error: true,
         message: "You must verify your email to activate your account",
       });
     }
-    //3. Verify the password is valid
+
     const isValid = await bcrypt.compare(req.body.password, user.password);
     if (!isValid) {
       return res.status(400).json({
@@ -587,7 +512,6 @@ exports.LoginAdminPunmeaw = async (req, res) => {
       });
     }
 
-    //Generate Access token
     const { error, token } = await generateJwt(user.email, user._id);
     if (error) {
       return res.status(500).json({
@@ -600,11 +524,10 @@ exports.LoginAdminPunmeaw = async (req, res) => {
 
     await user.save();
 
-    //Success
     return res.send({
       success: true,
       message: "Admin logged in successfully",
-      accessToken: token, //Send it to the client
+      accessToken: token,
     });
   } catch (err) {
     console.error("Login error", err);
@@ -678,7 +601,7 @@ exports.getUser = async (req, res) => {
       return res.status(401).send("unauthorized");
     }
     var userId = decoded.id;
-    // Fetch the user by id
+
     try {
       const user = await User.findOne({
         _id: userId,
@@ -753,7 +676,7 @@ exports.GetUserById = async (req, res) => {
 
 exports.getIdealCat = async (req, res) => {
   const id = req.decoded.id;
-  //console.log(id);
+
   try {
     const getideal = await User.findById(id).select('idealCat.answer');
     return res.status(200).json(getideal);
@@ -763,40 +686,22 @@ exports.getIdealCat = async (req, res) => {
 
 };
 
-//!รอtest หน้าบ้าน
 exports.getBestmatch = async (req, res) => {
   const id = req.decoded.id;
   const idealCat = await User.findById(id).select('idealCat');
   console.log(idealCat);
   const getData = await FindHome.find({
     $and: [
-      { "generalInfo.characteristic.hair": idealCat.idealCat[0].answer }, //*ขนสั้น
-      { "generalInfo.neutered": idealCat.idealCat[1].answer }, //*การทำหมัน
-      { "generalInfo.characteristic.sandbox": idealCat.idealCat[2].answer }, //*กะบะทราย
-      { "generalInfo.vaccination": idealCat.idealCat[3].answer }, //*รับวัคซีน
+      { "generalInfo.characteristic.hair": idealCat.idealCat[0].answer },
+      { "generalInfo.neutered": idealCat.idealCat[1].answer },
+      { "generalInfo.characteristic.sandbox": idealCat.idealCat[2].answer },
+      { "generalInfo.vaccination": idealCat.idealCat[3].answer },
     ]
   });
   return res.status(200).json(getData);
 
 };
 
-//!รอtest หน้าบ้าน
-exports.orBestmatch = async (req, res) => {
-  const id = req.decoded.id;
-  const idealCat = await User.findById(id).select('idealCat');
-  const getData = await FindHome.find({
-    $or: [
-      { "generalInfo.characteristic.hair": idealCat.idealCat[0].answer }, //*ขนสั้น
-      { "generalInfo.neutered": idealCat.idealCat[1].answer }, //*การทำหมัน
-      { "generalInfo.characteristic.sandbox": idealCat.idealCat[2].answer }, //*กะบะทราย
-      { "generalInfo.vaccination": idealCat.idealCat[3].answer }, //*รับวัคซีน
-    ]
-  });
-  return res.status(200).json(getData);
-};
-
-
-//!เปลียนรหัสผ่าน //!รอtest หน้าบ้าน
 exports.resetEmail = async (req, res) => {
   const id = req.decoded.id;
   const getEmail = await User.findById(id).select('email');
@@ -828,11 +733,8 @@ exports.resetEmail = async (req, res) => {
 
 };
 
-//!verify email //!รอtest หน้าบ้าน
 exports.verifyIdentityEmail = async (req, res) => {
   try {
-    // const id = req.decoded.id;
-    // const {getEmail} = await User.findById(id).select('email');
     const { email, code } = req.body;
     if (!email || !code) {
       return res.json({
@@ -846,7 +748,7 @@ exports.verifyIdentityEmail = async (req, res) => {
       emailResetToken: code,
       emailResetTokenExpires: {
         $gt: Date.now(),
-      }, // check if the code is expired
+      },
     });
     if (!user) {
       return res.status(400).json({
@@ -872,7 +774,6 @@ exports.verifyIdentityEmail = async (req, res) => {
   }
 };
 
-//!เปลี่ยนอีเมลโดยห้ามซ้ำกับที่มีอยู่ //!รอtest หน้าบ้าน
 exports.editEmail = async (req, res) => {
   const id = req.decoded.id;
   const result = emailSchema.validate(req.body);
@@ -914,8 +815,7 @@ exports.editEmail = async (req, res) => {
 
 };
 
-//!Logintest เวลา active  
-exports.Logintest = async (req, res) => {
+exports.Login = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -924,23 +824,22 @@ exports.Logintest = async (req, res) => {
         message: "Cannot authorize user.",
       });
     }
-    //1. Find if any account with that email exists in DB
+
     const user = await User.findOne({
       email: email,
     });
-    // NOT FOUND - Throw error
+
     if (!user) {
       return res.status(404).json({
         error: true,
         message: "Account not found",
       });
     }
-    //2. Throw error if account is not activated
+
     if (!user.active) {
       const result = await User.findOne({ email: req.body.email });
-      //console.log(result.email);
-      let code = Math.floor(100000 + Math.random() * 900000); //Generate random 6 digit code.
-      let expiry = Date.now() + 60 * 1000 * 15; //Set expiry 15 mins ahead from now
+      let code = Math.floor(100000 + Math.random() * 900000);
+      let expiry = Date.now() + 60 * 1000 * 15;
       const sendCode = await sendEmail(result.email, code);
       if (sendCode.error) {
         return res.status(500).json({
@@ -962,7 +861,6 @@ exports.Logintest = async (req, res) => {
         _id: user.id,
       });
     }
-    //3. Verify the password is valid
     const isValid = await bcrypt.compare(req.body.password, user.password);
     if (!isValid) {
       return res.status(400).json({
@@ -971,7 +869,6 @@ exports.Logintest = async (req, res) => {
       });
     }
 
-    //Generate Access token
     const { error, token } = await generateJwt(user.email, user._id);
     if (error) {
       return res.status(500).json({
@@ -988,11 +885,10 @@ exports.Logintest = async (req, res) => {
 
     await user.save();
 
-    //Success
     return res.send({
       success: true,
       message: "User logged in successfully",
-      accessToken: token, //Send it to the client
+      accessToken: token,
       bodyUser: user_body,
     });
   } catch (err) {
@@ -1004,7 +900,6 @@ exports.Logintest = async (req, res) => {
   }
 };
 
-//!Get Admin
 exports.getAdmin = async (req, res) => {
   const id = req.decoded.id;
   const result = await Admin.findById(id).select([
@@ -1024,7 +919,6 @@ exports.getAdmin = async (req, res) => {
   }
 };
 
-//!Put 
 exports.AgainOTPEmail = async (req, res) => {
   const id = req.query.id;
   const data = await User.findById(id);
@@ -1033,8 +927,8 @@ exports.AgainOTPEmail = async (req, res) => {
     var user = await User.findOne({
       email: result.value.email,
     });
-    let code = Math.floor(100000 + Math.random() * 900000); 
-    let expiry = Date.now() + 60 * 1000 * 15; 
+    let code = Math.floor(100000 + Math.random() * 900000);
+    let expiry = Date.now() + 60 * 1000 * 15;
     const sendCode = await sendEmail(result.value.email, code);
     if (sendCode.error) {
       return res.status(500).json({

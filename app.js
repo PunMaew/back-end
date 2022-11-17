@@ -5,7 +5,6 @@ const cors = require('cors');
 const app = express();
 require("dotenv").config();
 
-//connect to the database
 const PORT = 5443;
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -20,7 +19,6 @@ mongoose.connect(process.env.MONGO_URI, {
 
   });
 
-//health check
 app.get("/ping", (req, res) => {
   return res.send({
     error: false,

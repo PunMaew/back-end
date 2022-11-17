@@ -24,9 +24,7 @@ exports.CreateArticle = async (req, res) => {
         req.body.authorAdmin = new mongoose.Types.ObjectId(req.decoded.id);
         const result = articleSchema.validate(req.body);
         const newArticle = new Article(result.value);
-        //console.log(newArticle);
         await newArticle.save();
-        //res.setHeader('Access-Control-Allow-Origin', '*');
         return res.status(200).json({
             success: true,
             message: "Create Success",
@@ -52,7 +50,6 @@ exports.SingleuploadArticle = async (req, res) => {
                 fileSize: fileSizeFormatter(req.file.size, 2)
             }
         })
-        //res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(201).send({
             message: 'File Uploaded Successfully',
             image: req.file.originalname
@@ -91,7 +88,6 @@ exports.FindOneArticle = async (req, res) => {
             data: data,
         });
     } catch (err) {
-        //res.status(500).send({ message: "Error retrieving Post with id=" + id });
         console.log(err);
     }
 };
@@ -191,7 +187,6 @@ exports.updateImageArticle = async (req, res) => {
                 message: `Cannot update Article. Maybe Article was not found!`
             });
         }
-        //res.setHeader('Access-Control-Allow-Origin', '*');
         res.status(201).send({
             message: 'File Uploaded Successfully',
             image: req.file.originalname
@@ -217,12 +212,6 @@ exports.readFile = async (req, res) => {
 
 exports.GetMultipleRandom = async (req, res) => {
     const getAllPost = await Article.find();
-    // if (!getAllPost || getAllPost.length === 0) {
-    //     return res.status(201).send({
-    //         message: "No Post Now"
-    //     });
-    // }
-
     if (getAllPost.length < 1) {
         return res.status(200).json([]);
     }

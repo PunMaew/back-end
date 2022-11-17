@@ -25,7 +25,6 @@ const findHomeSchema = Joi.object().keys(
             },
             vaccination: Joi.string().required(),
             receiveVaccine: Joi.array,
-            //receiveDate: Joi.string().required(),
             disease: Joi.string().required(),
             neutered: Joi.string().required(),
             gender: Joi.string().required(),
@@ -46,7 +45,6 @@ const findHomeSchema = Joi.object().keys(
 
     })
 
-//--------------------- User ---------------------
 exports.Create = async (req, res, next) => {
     try {
         const idUser = req.decoded.id;
@@ -76,11 +74,16 @@ exports.Create = async (req, res, next) => {
 
 exports.GetMyPost = async (req, res) => {
     const id = req.query.id;
+    if (!id) {
+        return res.status(403).json({
+            error: true,
+            message: "Request user id.",
+        });
+    }
     const mypost = await FindHome.find({ author: id });
     return res.send({ mypost });
 };
 
-//--------------------- User and Admin ---------------------
 exports.FindAllPost = async (req, res) => {
     const getAllPost = await FindHome.find().populate({
         path: 'authorInfo', select: ['firstName', 'lastName']
@@ -131,6 +134,12 @@ exports.FindAlloldPost = async (req, res) => {
 
 exports.FindOnePost = async (req, res) => {
     const id = req.query.id;
+    if (!id) {
+        return res.status(403).json({
+            error: true,
+            message: "Request user id.",
+        });
+    }
     try {
         const data = await FindHome.findById(id).populate('author').exec();
         if (!data)
@@ -148,6 +157,12 @@ exports.FindOnePost = async (req, res) => {
 exports.DeletePost = async (req, res) => {
     try {
         const id = req.query.id;
+        if (!id) {
+            return res.status(403).json({
+                error: true,
+                message: "Request user id.",
+            });
+        }
         const post = await FindHome.findById(id)
         const nameImage = post.image.filePath.substr(8);
         console.log(nameImage);
@@ -211,6 +226,10 @@ exports.updateImageFindHome = async (req, res) => {
             post.image = undefined
             await post.save()
         };
+
+        if (!req.file.originalname || !req.file.path || !req.file.mimetype || !req.file.size) {
+            throw new Error('require image')
+        }
         const data = await FindHome.findByIdAndUpdate(id,
             {
                 image: {
@@ -237,12 +256,6 @@ exports.updateImageFindHome = async (req, res) => {
 
 exports.GetMultipleRandom = async (req, res) => {
     const getAllPost = await FindHome.find();
-    // if (!getAllPost || getAllPost.length === 0) {
-    //     return res.status(201).send({
-    //         message: "No Post Now"
-    //     });
-    // }
-
     if (getAllPost.length < 1) {
         return res.status(200).json([]);
     }
@@ -259,6 +272,9 @@ exports.Singleupload = async (req, res) => {
     try {
         if (!req.params.postId) {
             throw new Error('require field')
+        }
+        if (!req.file.originalname || !req.file.path || !req.file.mimetype || !req.file.size) {
+            throw new Error('require image')
         }
         await FindHome.findByIdAndUpdate(req.params.postId, {
 
@@ -297,13 +313,13 @@ exports.LikePost = async (req, res) => {
     const findPostByPostid = await FindHome.findById(Postid);
     if (findPostByPostid) {
         try {
-            // ไปหา favor ของผู้ใช้คนนั้นๆมา
+
             const getFavor = await User.findById(id).select('favor');
             console.log(getFavor);
-            // สร้างตัวแปร truefalse มาเก็บไว้เช็คว่า ที่กดไลค์เข้ามา มันเคยมีแล้วหรือยัง
+
             let checkDuplicate = false;
 
-            // ลูปเช็คว่ามีซำ้ไหม ถ้ามีให้ตั้ง true
+
             for (let index = 0; index < getFavor.favor.length; index++) {
                 if (Postid == getFavor.favor[index].itemId) {
                     checkDuplicate = true;
@@ -314,13 +330,13 @@ exports.LikePost = async (req, res) => {
                 await User.updateOne({ _id: id }, { $pull: { favor: { itemId: Postid } } })
                 return res.status(200).json({
                     status: 200,
-                    message: "Unlike สำเร็จ"
+                    message: "Unlike succeed"
                 })
             } else {
                 await User.updateOne({ _id: id }, { $push: { favor: { itemId: Postid } } })
                 return res.status(200).json({
                     status: 200,
-                    message: "Like สำเร็จ"
+                    message: "Like succeed"
                 })
             }
         } catch (error) {
@@ -338,13 +354,12 @@ exports.LikePost = async (req, res) => {
 exports.getLikePost = async (req, res) => {
     const id = req.decoded.id;
     try {
-        // favor ของผู้ใช้คนนั้น
         const getFavor = await User.findById(id).select('favor');
         if (getFavor != null) {
             let allPosts = [];
-            // ลูปเพื่อดึงข้อมูลแต่ละโพส
+
             for (let index = 0; index < getFavor.favor.length; index++) {
-                //ดึงข้อมูลแต่ละอัน
+
                 const a = await FindHome.findById(getFavor.favor[index].itemId);
                 allPosts.push(a);
             }
@@ -361,13 +376,13 @@ exports.getLikePost = async (req, res) => {
 };
 
 exports.changeStatus = async (req, res) => {
-    const id = req.query.postID//id post ที่จะเปลี่ยน status
-    const findPost = await FindHome.findById(id); //เอา id ไปดึงหาข้อมูลมี post ไหม
+    const id = req.query.postID
+    const findPost = await FindHome.findById(id);
     if (findPost != null) {
         await FindHome.findByIdAndUpdate(id, { statusbar: "รับเลี้ยงสำเร็จ" });
-        return res.status(200).json({ message: 'ยินดีด้วย น้องแมวของคุณได้รับการช่วยเหลือแล้ว' });
+        return res.status(200).json({ message: 'Congratulations, your cat has been rescued.' });
     } else {
-        return res.status(400).json({ message: 'ไม่มี ID ที่คุณต้องการเปลี่ยน Status' });
+        return res.status(400).json({ message: 'The ID you want to change Status does not exist.' });
     }
 };
 
@@ -417,15 +432,3 @@ exports.getNotAdopt = async (req, res) => {
         });
     }
 };
-
-
-
-
-
-
-
-
-
-
-
-
