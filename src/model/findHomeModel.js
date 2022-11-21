@@ -4,8 +4,8 @@ const findHomeSchema = new Schema({
     generalInfo: {
         catName: { type: String, required: true },
         color: { type: String, required: true },
-        breeds: { type: String, default: "-", required: false },
-        age: { type: String, default: "-", required: false },
+        breeds: { type: String, default: "-", required: false, },
+        age: { type: String, default: "-", required: false, },
         ageRange: { type: String, required: false },
         location: {
             province: { type: String, required: true },
@@ -13,7 +13,7 @@ const findHomeSchema = new Schema({
         },
         vaccination: { type: String, required: true },
         receiveVaccine: { type: Array, required: true },
-        disease: { type: String, default: "-", required: false },
+        disease: { type: String, default: "-", required: false, },
         neutered: { type: String, required: true },
         gender: { type: String, required: true },
         characteristic: {
@@ -28,7 +28,7 @@ const findHomeSchema = new Schema({
         terms: { type: Boolean, default: false },
         contactName: { type: String, required: true },
         tel: { type: String, required: true },
-        facebook: { type: String, default: "-", required: false },
+        facebook: { type: String, default: "-", required: false, },
         line: { type: String, default: "-", required: false, },
     },
     author: { type: mongoose.Types.ObjectId, ref: "user", required: true },
