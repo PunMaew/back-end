@@ -231,19 +231,18 @@ exports.ForgotPassword = async (req, res) => {
       });
     }
 
-    let code = Math.floor(100000 + Math.random() * 900000);
-    let response = await sendEmail(user.email, code);
-    if (response.error) {
-      return res.status(500).json({
-        error: true,
-        message: "Couldn't send mail. Please try again later.",
-        _id: user.id,
-      });
-    }
-    let expiry = Date.now() + 60 * 1000 * 15;
-    user.resetPasswordToken = code;
-    user.resetPasswordExpires = expiry;
-    await user.save();
+    // let code = Math.floor(100000 + Math.random() * 900000);
+    // let response = await sendEmail(user.email, code);
+    // if (response.error) {
+    //   return res.status(500).json({
+    //     error: true,
+    //     message: "Couldn't send mail. Please try again later.",
+    //   });
+    // }
+    // let expiry = Date.now() + 60 * 1000 * 15;
+    // user.resetPasswordToken = code;
+    // user.resetPasswordExpires = expiry;
+    // await user.save();
     return res.send({
       success: true,
       message:
