@@ -4,31 +4,31 @@ const findHomeSchema = new Schema({
     generalInfo: {
         catName: { type: String, required: true },
         color: { type: String, required: true },
-        breeds: { type: String, required: false, default: "-" },
-        age: { type: String, required: false, default: "-" },
-        ageRange: { type: String, required: false }, 
+        breeds: { type: String, default: "-", required: false },
+        age: { type: String, default: "-", required: false },
+        ageRange: { type: String, required: false },
         location: {
             province: { type: String, required: true },
             district: { type: String, required: true },
         },
-        vaccination:{ type: String, required: true },
-        receiveVaccine: { type: Array, required: true }, 
-        disease: { type: String, required: false, default: "-" },
+        vaccination: { type: String, required: true },
+        receiveVaccine: { type: Array, required: true },
+        disease: { type: String, default: "-", required: false },
         neutered: { type: String, required: true },
         gender: { type: String, required: true },
-        characteristic:{
+        characteristic: {
             hair: { type: String, required: false },
             size: { type: String, required: false },
-            habit: { type: Array, required: false }, 
+            habit: { type: Array, required: false },
             sandbox: { type: String, required: false },
         },
-        others: { type: String, required: false, default: "-" },
+        others: { type: String, default: "-", required: false },
     },
     contact: {
-        terms:{ type: Boolean, default: false },
+        terms: { type: Boolean, default: false },
         contactName: { type: String, required: true },
         tel: { type: String, required: true },
-        facebook: { type: String, required: false, default: "-" },
+        facebook: { type: String, default: "-", required: false },
         line: { type: String, default: "-", required: false, },
     },
     author: { type: mongoose.Types.ObjectId, ref: "user", required: true },
@@ -48,7 +48,7 @@ const findHomeSchema = new Schema({
         }
     },
 },
-{
+    {
         timestamps: {
             createdAt: "createdAt",
             updatedAt: "updatedAt",
@@ -59,7 +59,7 @@ const findHomeSchema = new Schema({
     }
 );
 findHomeSchema.virtual('authorInfo', {
-    ref: "user", 
+    ref: "user",
     localField: 'author',
     foreignField: '_id',
     justOne: true
