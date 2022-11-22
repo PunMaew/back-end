@@ -6,7 +6,8 @@ const Admin = require("../model/adminModel");
 const FindHome = require("../model/findHomeModel");
 const { generateJwt } = require("../helpers/generateJwt");
 const jwt = require("jsonwebtoken");
-const fs = require('fs/promises')
+const fs = require('fs/promises');
+const { find } = require("../model/userModel");
 
 const userSchema = Joi.object().keys({
   firstName: Joi.string().min(4).max(30).required(),
@@ -222,13 +223,14 @@ exports.ForgotPassword = async (req, res) => {
     const user = await User.findOne({
       email: email,
     });
+
     if (!user) {
       return res.send({
         success: true,
-        message:
-          "We will send you an email to reset your password",
+        message: "Account not found",
       });
     }
+
     let code = Math.floor(100000 + Math.random() * 900000);
     let response = await sendEmail(user.email, code);
     if (response.error) {
@@ -245,6 +247,7 @@ exports.ForgotPassword = async (req, res) => {
       success: true,
       message:
         "We will send you an email to reset your password",
+      _id: user.id,
     });
   } catch (error) {
     console.error("forgot-password-error", error);

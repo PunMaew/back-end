@@ -94,15 +94,14 @@ exports.FindOneArticle = async (req, res) => {
 
 exports.DeleteArticle = async (req, res) => {
     const id = req.query.id;
+    if (!id) {
+        return res.status(400).send({
+            message: "Data can not be empty!"
+        });
+    }
     try {
-        console.log(id);
-
         const post = await Article.findById(id)
-        console.log(post);
-
         const nameImage = post.image.filePath.substr(8);
-        console.log(nameImage);
-
         await fs.unlink(`./uploads/${nameImage}`)
 
         const data = await Article.findByIdAndRemove(id)

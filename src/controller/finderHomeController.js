@@ -16,7 +16,7 @@ const findHomeSchema = Joi.object().keys(
         generalInfo: {
             catName: Joi.string().required(),
             color: Joi.string().required(),
-            breeds: Joi.string().required(),
+            breeds: Joi.string().required().default('-'),
             age: Joi.string().required(),
             location:
             {
@@ -25,7 +25,7 @@ const findHomeSchema = Joi.object().keys(
             },
             vaccination: Joi.string().required(),
             receiveVaccine: Joi.array,
-            disease: Joi.string().required(),
+            disease: Joi.string().required().default('-'),
             neutered: Joi.string().required(),
             gender: Joi.string().required(),
             characteristic: {
@@ -34,13 +34,13 @@ const findHomeSchema = Joi.object().keys(
                 habit: Joi.array,
                 sandbox: Joi.string().required()
             },
-            others: Joi.string().required(),
+            others: Joi.string().required().default('-'),
         },
         contact: {
             contactName: Joi.string().required(),
             tel: Joi.string().required(),
-            facebook: Joi.string().required(),
-            line: Joi.string().required(),
+            facebook: Joi.string().required().default('-'),
+            line: Joi.string().required().default('-'),
         },
 
     })
